@@ -1,0 +1,7 @@
+numpy==1.25.2
+ovito==3.9.1
+PySide6==6.5.2
+PySide6-Addons==6.5.2
+PySide6-Essentials==6.5.2
+shiboken6==6.5.2
+traits==6.4.2
