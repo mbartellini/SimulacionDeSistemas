@@ -4,10 +4,7 @@ import ar.edu.itba.ss.utils.CellIndexMethod;
 import ar.edu.itba.ss.utils.Particle;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 import com.moandjiezana.toml.Toml;
 
@@ -84,12 +81,18 @@ public class App {
         CellIndexMethod cim = new CellIndexMethod(L/gridCount, numCellsX, numCellsY, neighR);
         cim.insertParticles(particles);
 
+/*
         Particle queryParticle = new Particle(1, 7, 0, 0, 0);
         List<Particle> neighbors = cim.getNeighbors(queryParticle);
+*/
+        Map<Particle, List<Particle>> neighbors = cim.getNeighbors(particles);
 
         System.out.println("Neighbors of the query particle:");
-        for (Particle neighbor : neighbors) {
-            System.out.println("Particle at (" + neighbor.x + ", " + neighbor.y + ")");
+        for (Map.Entry<Particle, List<Particle>> neighborList : neighbors.entrySet()) {
+            System.out.println("Particle: (" + neighborList.getKey().x + ", " + neighborList.getKey().y + ")");
+            for (Particle particle : neighborList.getValue()) {
+                System.out.println("\t neigh: (" + particle.x + ", " + particle.y + ")");
+            }
         }
     }
 }

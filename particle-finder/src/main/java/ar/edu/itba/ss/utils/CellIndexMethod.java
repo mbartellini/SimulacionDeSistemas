@@ -27,6 +27,14 @@ public class CellIndexMethod {
         }
     }
 
+    public Map<Particle, List<Particle>> getNeighbors(List<Particle> particles) {
+        Map<Particle, List<Particle>> resultMap = new HashMap<>();
+        for (Particle particle : particles) {
+            resultMap.putIfAbsent(particle, getNeighbors(particle));
+        }
+        return resultMap;
+    }
+
     public List<Particle> getNeighbors(Particle particle) {
         long cellIndex = calculateCellIndex(particle);
         List<Particle> neighbors = new ArrayList<>();
