@@ -3,7 +3,7 @@ staticParticleFile = "./Static100.txt"
 dynamicParticleFile = "./Dynamic100.txt"
 
 [constants]
-neighR = 1.0
+neighR = 5.0
 gridCount = 2
 numCellsX = 5
 numCellsY = 5
