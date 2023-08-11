@@ -9,7 +9,11 @@ def parse_static(filename: str):
 
 
 def _split_line_into_floats(line: str):
-    return [float(prop) for prop in line.split()] # Should check if we always take 2 props
+    return [float(prop) for prop in line.split()]  # Should check if we always take 2 props
+
+
+def _split_line_into_ints(line: str):
+    return [int(prop) for prop in line.split()]  # Should check if we always take 2 props
 
 
 def parse_dynamic(filename: str, particle_count: int): # First iteration, only for
@@ -20,3 +24,18 @@ def parse_dynamic(filename: str, particle_count: int): # First iteration, only f
         for p in range(particle_count):
             data.append(_split_line_into_floats(lines[p+1]))
     return time, data
+
+
+def parse_neighbors(filename: str, n: int):
+    neighbors_list = []
+    for i in range(n):
+        neighbors_list.append([])
+    with open(filename) as f:
+        lines = f.readlines()
+        for line in lines:
+            ids = _split_line_into_ints(line)
+            if len(ids) <= 0:
+                continue
+            for neigh in ids[1:]:
+                neighbors_list[ids[0]-1].append(neigh-1)
+    return neighbors_list
