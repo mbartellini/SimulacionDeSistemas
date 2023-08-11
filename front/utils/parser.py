@@ -37,5 +37,5 @@ def parse_neighbors(filename: str, n: int):
             if len(ids) <= 0:
                 continue
             for neigh in ids[1:]:
-                neighbors_list[ids[0]-1].append(neigh-1)
+                neighbors_list[ids[0]].append(neigh)
     return neighbors_list
