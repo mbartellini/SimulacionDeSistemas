@@ -16,24 +16,23 @@ public class App {
     public static void main(String[] args) {
         String staticParticleFilePath = null;
         String dynamicParticleFilePath = null;
+        String neighborFilePath = null;
         Double neighR = 1.0;
-        Long gridCount = 2L;
-        Long numCellsX = 5L;
-        Long numCellsY = 5L;
+        Long gridCount = 5L;
 
         try {
             InputStream inputStream = new FileInputStream("config.toml");
             Toml toml = new Toml().read(inputStream);
             dynamicParticleFilePath = toml.getString("files.dynamicParticleFile", "");
             staticParticleFilePath = toml.getString("files.staticParticleFile", "");
+            neighborFilePath = toml.getString("files.neighborFile", "");
             neighR = toml.getDouble("constants.neighR", neighR);
-            gridCount = toml.getLong("constants.gridSize", gridCount);
-            numCellsX = toml.getLong("constants.numCellsX", numCellsX);
-            numCellsY = toml.getLong("constants.numCellsY", numCellsY);
+            gridCount = toml.getLong("constants.gridCount", gridCount);
 
             if (staticParticleFilePath.equals("") || dynamicParticleFilePath.equals(""))
                 throw new Exception("Missing particleFile");
-
+            if (neighborFilePath.equals(""))
+                throw new Exception("Missing neighborFilepath");
             if (gridCount == 0) {
                 throw new Exception("Invalid gridCount of 0");
             }
@@ -69,7 +68,7 @@ public class App {
                     if (x < 0 || x > L || y < 0 || y > L) {
                         throw new Exception(String.format("Invalid Particle Location at: %g, %g", x, y));
                     }
-                    particles.add(new Particle(x, y, radius, i, property));
+                    particles.add(new Particle(i, x, y, radius, property));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,21 +77,27 @@ public class App {
             return;
         }
 
-        CellIndexMethod cim = new CellIndexMethod(L/gridCount, numCellsX, numCellsY, neighR);
+        long startTime = System.currentTimeMillis();
+        CellIndexMethod cim = new CellIndexMethod(L/gridCount, gridCount, gridCount, neighR, true);
         cim.insertParticles(particles);
 
-/*
-        Particle queryParticle = new Particle(1, 7, 0, 0, 0);
-        List<Particle> neighbors = cim.getNeighbors(queryParticle);
-*/
         Map<Particle, List<Particle>> neighbors = cim.getNeighbors(particles);
+        long endTime = System.currentTimeMillis();
+        System.out.printf("Runtime: %dms\n", endTime - startTime);
 
-        System.out.println("Neighbors of the query particle:");
-        for (Map.Entry<Particle, List<Particle>> neighborList : neighbors.entrySet()) {
-            System.out.println("Particle: (" + neighborList.getKey().x + ", " + neighborList.getKey().y + ")");
-            for (Particle particle : neighborList.getValue()) {
-                System.out.println("\t neigh: (" + particle.x + ", " + particle.y + ")");
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(neighborFilePath));
+            for (Map.Entry<Particle, List<Particle>> neighborList : neighbors.entrySet()) {
+                writer.write(String.valueOf(neighborList.getKey().id));
+                for (Particle particle : neighborList.getValue()) {
+                    writer.write(String.format(" %d", particle.id));
+                }
+                writer.write("\n");
             }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error while writing to " + neighborFilePath);
         }
+
     }
 }

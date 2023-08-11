@@ -1,9 +1,8 @@
 [files]
-staticParticleFile = "./Static100.txt"
-dynamicParticleFile = "./Dynamic100.txt"
+staticParticleFile = "../data/Static100.txt"
+dynamicParticleFile = "../data/Dynamic100.txt"
+neighborFile = "../data/Neighbor100.txt"
 
 [constants]
 neighR = 5.0
-gridCount = 2
-numCellsX = 5
-numCellsY = 5
+gridCount = 5

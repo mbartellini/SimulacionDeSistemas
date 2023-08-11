@@ -11,13 +11,15 @@ public class CellIndexMethod {
     private final Long numCellsX, numCellsY;
     private final Map<Long, List<Particle>> grid;
     private final double r_c;
+    private final boolean enforceBoundary;
 
-    public CellIndexMethod(double gridSize, Long numCellsX, Long numCellsY, double r_c) {
+    public CellIndexMethod(double gridSize, Long numCellsX, Long numCellsY, double r_c, boolean enforceBoundary) {
         this.gridSize = gridSize;
         this.numCellsX = numCellsX;
         this.numCellsY = numCellsY;
         this.grid = new HashMap<>();
         this.r_c = r_c;
+        this.enforceBoundary = enforceBoundary;
     }
 
     public void insertParticles(List<Particle> particles) {
@@ -41,15 +43,16 @@ public class CellIndexMethod {
 
         for (long dx = -1L; dx <= 1; dx++) {
             for (long dy = -1L; dy <= 1; dy++) {
-                // TODO: This varies with "condicion de contorno"
                 long neighborCellX = (cellIndex % numCellsX) + dx;
                 long neighborCellY = (cellIndex / numCellsX) + dy;
 
-                if (neighborCellX >= 0 && neighborCellX < numCellsX &&
-                    neighborCellY >= 0 && neighborCellY < numCellsY) {
+                if ((neighborCellX >= 0 && neighborCellX < numCellsX &&
+                    neighborCellY >= 0 && neighborCellY < numCellsY) || (! this.enforceBoundary)) {
+                    neighborCellX = getMod(neighborCellX, numCellsX);
+                    neighborCellY = getMod(neighborCellY, numCellsY);
+
                     long neighborCellIndex = neighborCellX + neighborCellY * numCellsX;
                     List<Particle> cellParticles = grid.getOrDefault(neighborCellIndex, new ArrayList<>());
-                    // TODO: Ask for radius.
                     for (Particle p : cellParticles) {
                         if (particle.isBorderToBorderNeighbour(r_c, p)) {
                             neighbors.add(p);
@@ -66,5 +69,9 @@ public class CellIndexMethod {
         int cellX = (int) (particle.x / gridSize);
         int cellY = (int) (particle.y / gridSize);
         return cellX + cellY * numCellsX;
+    }
+
+    private long getMod(long x, long mod) {
+        return ((x % mod) + mod) % mod;
     }
 }
