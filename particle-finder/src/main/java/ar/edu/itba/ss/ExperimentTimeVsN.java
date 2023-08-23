@@ -1,5 +1,6 @@
 package ar.edu.itba.ss;
 
+import ar.edu.itba.ss.utils.BruteForceMethod;
 import ar.edu.itba.ss.utils.CellIndexMethod;
 import ar.edu.itba.ss.utils.Particle;
 
@@ -11,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ExperimentTimeVsN {
-    private static final String TIME_VS_N_FILE = "../data/ExperimentTimeVsN.txt";
-    private static final int MAX_PARTICLE_COUNT = 4000;
+    private static final String TIME_VS_N_FILE = "../data/ExperimentTimeVsN_CIM.txt";
+    private static final int MAX_PARTICLE_COUNT = 5000;
     private static final int TEST_COUNT = 5;
     private static final double INTERACTION_RADIUS = 1;
     private static final double RADIUS = 0.25;
@@ -23,7 +24,7 @@ public class ExperimentTimeVsN {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(TIME_VS_N_FILE));
-            for (int particleCount = 1; particleCount <= MAX_PARTICLE_COUNT; particleCount++) {
+            for (int particleCount = 1; particleCount <= MAX_PARTICLE_COUNT; particleCount+=100) {
                 writer.write(String.format("%d", particleCount));
                 for (int test = 0; test < TEST_COUNT; test++) {
                     List<Particle> particles = new ArrayList<>();
@@ -36,6 +37,9 @@ public class ExperimentTimeVsN {
                     CellIndexMethod cim = new CellIndexMethod(AREA_SIZE/m, m, m, INTERACTION_RADIUS, true);
                     cim.insertParticles(particles);
                     Map<Particle, List<Particle>> neighbors = cim.getNeighbors(particles);
+/*                    BruteForceMethod bfm = new BruteForceMethod(INTERACTION_RADIUS, true);
+                    bfm.insertParticles(particles);
+                    Map<Particle, List<Particle>> neighbors = bfm.getNeighbors(particles);*/
                     long endTime = System.currentTimeMillis();
 
                     writer.write(String.format(" %d", endTime - startTime));

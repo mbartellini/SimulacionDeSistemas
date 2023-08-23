@@ -77,6 +77,8 @@ public class App {
             return;
         }
 
+        gridCount = (long) (L / (neighR + 2 * 1));
+
         long startTime = System.currentTimeMillis();
         CellIndexMethod cim = new CellIndexMethod(L/gridCount, gridCount, gridCount, neighR, true);
         cim.insertParticles(particles);

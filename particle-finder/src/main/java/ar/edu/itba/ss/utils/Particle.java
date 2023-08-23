@@ -20,6 +20,10 @@ public class Particle {
         return Math.sqrt(Math.pow(this.x - p.x, 2) + Math.pow(this.y - p.y, 2));
     }
 
+    public boolean isBorderToBorderNeighbour(double radius, double x, double y) {
+        return Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2)) < radius;
+    }
+
     public boolean isBorderToBorderNeighbour(double radius, Particle p) {
         return ! this.equals(p) && this.getDistanceTo(p) < radius + this.r + p.r;
     }

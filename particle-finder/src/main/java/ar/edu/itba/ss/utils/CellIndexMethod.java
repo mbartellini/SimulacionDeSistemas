@@ -45,17 +45,32 @@ public class CellIndexMethod {
             for (long dy = -1L; dy <= 1; dy++) {
                 long neighborCellX = (cellIndex % numCellsX) + dx;
                 long neighborCellY = (cellIndex / numCellsX) + dy;
-
+                // System.out.printf("%d %d:\n", neighborCellX, neighborCellY);
                 if ((neighborCellX >= 0 && neighborCellX < numCellsX &&
                     neighborCellY >= 0 && neighborCellY < numCellsY) || (! this.enforceBoundary)) {
-                    neighborCellX = getMod(neighborCellX, numCellsX);
-                    neighborCellY = getMod(neighborCellY, numCellsY);
-
-                    long neighborCellIndex = neighborCellX + neighborCellY * numCellsX;
+                    long neighborCellIndex = getMod(neighborCellX, numCellsX) + getMod(neighborCellY, numCellsY) * numCellsX;
+                    // System.out.printf("CellIndex: %d\n", neighborCellIndex);
                     List<Particle> cellParticles = grid.getOrDefault(neighborCellIndex, new ArrayList<>());
                     for (Particle p : cellParticles) {
-                        if (particle.isBorderToBorderNeighbour(r_c, p)) {
-                            neighbors.add(p);
+                        if (this.enforceBoundary) {
+                            if (particle.isBorderToBorderNeighbour(r_c, p)) {
+                                neighbors.add(p);
+                            }
+                        } else {
+                            double virtualX = p.x;
+                            if (neighborCellX == -1)
+                                virtualX -= numCellsX * gridSize;
+                            else if (neighborCellX >= numCellsX)
+                                virtualX += numCellsX * gridSize;
+                            double virtualY = p.y;
+                            if (neighborCellY == -1)
+                                virtualY -= numCellsY * gridSize;
+                            else if (neighborCellY >= numCellsY)
+                                virtualY += numCellsY * gridSize;
+                            // System.out.printf("%f %f -> %f %f\n", p.x, p.y, virtualX, virtualY);
+                            if (particle.isBorderToBorderNeighbour(r_c + p.r, virtualX, virtualY)) {
+                                neighbors.add(p);
+                            }
                         }
                     }
                 }

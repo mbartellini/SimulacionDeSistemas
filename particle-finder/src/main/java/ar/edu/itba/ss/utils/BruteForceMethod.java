@@ -7,17 +7,16 @@ import java.util.Map;
 
 public class BruteForceMethod {
 
-    private final double gridSize, rc;
+    private final double rc;
     private final boolean enforceBoundary;
     private final List<Particle> particles = new ArrayList<>();
 
-    public BruteForceMethod(double gridSize, double rc, boolean enforceBoundary) {
-        this.gridSize = gridSize;
+    public BruteForceMethod(double rc, boolean enforceBoundary) {
         this.rc = rc;
         this.enforceBoundary = enforceBoundary;
     }
 
-    void insertParticles(List<Particle> particles){
+    public void insertParticles(List<Particle> particles){
         this.particles.addAll(particles);
     }
 

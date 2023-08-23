@@ -18,6 +18,7 @@ public class Experiment {
     private static final String NEIGHBOR_FILE = "../data/ExperimentNeighbor.txt";
 
     public static void main(String[] args) {
+        // TODO: Set seed
         List<Particle> particles = new ArrayList<>();
         for (int i = 0; i < PARTICLE_COUNT; i++) {
             particles.add(new Particle(i, random(0, AREA_SIZE), random(0, AREA_SIZE), RADII, 1));

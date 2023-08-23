@@ -4,5 +4,5 @@ dynamicParticleFile = "../data/Dynamic100.txt"
 neighborFile = "../data/Neighbor100.txt"
 
 [constants]
-neighR = 5.0
+neighR = 25.0
 gridCount = 5
