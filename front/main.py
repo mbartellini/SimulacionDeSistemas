@@ -1,14 +1,14 @@
-from particle import Particle
 from utils.parser import *
 from utils.plots import *
 
-# STATIC_FILE = "../data/Static100.txt"
-# DYNAMIC_FILE = "../data/Dynamic100.txt"
-# NEIGHBOR_FILE = "../data/Neighbor100.txt"
+STATIC_FILE = "../data/Static100.txt"
+DYNAMIC_FILE = "../data/Dynamic100.txt"
+NEIGHBOR_FILE = "../data/Neighbor100.txt"
 
-STATIC_FILE = "../data/ExperimentStatic.txt"
-DYNAMIC_FILE = "../data/ExperimentDynamic.txt"
-NEIGHBOR_FILE = "../data/ExperimentNeighbor.txt"
+# STATIC_FILE = "../data/ExperimentStatic.txt"
+# DYNAMIC_FILE = "../data/ExperimentDynamic.txt"
+# NEIGHBOR_FILE = "../data/ExperimentNeighbor.txt"
+
 
 def main():
     particle_count, grid_size, static_properties = parse_static(STATIC_FILE)
@@ -24,7 +24,7 @@ def main():
             static_properties[p][1]
         ))
 
-    plot_neighbors(grid_size, particles, 80, n_list)
+    plot_neighbors(grid_size, particles, 46, n_list)
 
 
 if __name__ == '__main__':

@@ -39,3 +39,15 @@ def parse_neighbors(filename: str, n: int):
             for neigh in ids[1:]:
                 neighbors_list[ids[0]].append(neigh)
     return neighbors_list
+
+
+def parse_run_time(filename: str):
+    n = []
+    times = []
+    with open(filename) as f:
+        lines = f.readlines()
+        for line in lines:
+            line_ints = _split_line_into_ints(line)
+            n.append(line_ints[0])
+            times.append(line_ints[1:])
+    return n, times
