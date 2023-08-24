@@ -12,7 +12,7 @@ import com.moandjiezana.toml.Toml;
  * Main Simulation.
  *
  */
-public class App {
+public class Main {
     static final String OUTPUT_FILE = "DynamicCA.txt";
     public static void main(String[] args) {
         Double v = 1.0, noise = 0.1, r = 1.0;
@@ -61,23 +61,38 @@ public class App {
                 List <Particle> newGen = new ArrayList<>();
 
                 for (Map.Entry<Particle, List<Particle>> particle : neighbors.entrySet()) {
-                    double px = 0.0, py = 0.0, pv = 0.0, pr = 0.0, ptita = particle.getKey().tita;
+                    double px = 0.0, py = 0.0, pv = particle.getKey().v, pr = particle.getKey().r, ptita = particle.getKey().tita;
 
                     px = particle.getKey().x + deltaT*Math.cos(particle.getKey().tita)*particle.getKey().v;
                     py = particle.getKey().y + deltaT*Math.sin(particle.getKey().tita)*particle.getKey().v;
+
+                    while (px < 0.0) {
+                        px = (L + px);
+                    }
+                    while (py < 0.0) {
+                        py = (L + py);
+                    }
+
+                    while (px > L) {
+                        px = px - L;
+                    }
+                    while (py > L) {
+                        py = py - L;
+                    }
 
                     for (Particle particleNeighbor : particle.getValue()) {
                         ptita += particleNeighbor.tita;
                     }
 
-                    ptita /= (particle.getValue().size() + 1);
+                    ptita /= (Integer.valueOf(particle.getValue().size() + 1).doubleValue());
 
-                    ptita = Math.atan( / );
+                    ptita += (random.nextDouble() * noise) - noise/2;
 
                     newGen.add(new Particle(particle.getKey().id, px, py, pv, ptita, pr, 0));
                     writer.write(String.format("%d %g %g %g %g %g\n", particle.getKey().id, px, py, pv, pr, ptita));
                 }
 
+                particles = newGen;
             }
 
 

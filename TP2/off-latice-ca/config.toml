@@ -1,7 +1,7 @@
 [simulation]
 N = 300
-L = 7
-noise = 0.1
+L = 100
+noise = 1.0
 v = 1.0
 r = 1.0
-iter = 10
+iter = 100

@@ -39,3 +39,4 @@ build/
 
 */main.iml
 .idea/*
+plots/env/*

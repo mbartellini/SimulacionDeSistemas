@@ -32,7 +32,7 @@
                         <archive>
                             <manifest>
                                 <mainClass>
-                                    ar.edu.itba.ss.App
+                                    ar.edu.itba.ss.Main
                                 </mainClass>
                             </manifest>
                         </archive>

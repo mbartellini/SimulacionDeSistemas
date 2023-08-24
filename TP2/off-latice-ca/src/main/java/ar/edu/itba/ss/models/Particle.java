@@ -25,7 +25,7 @@ public class Particle {
         ArrayList<Particle> particles = new ArrayList<>();
 
         while (n != 0) {
-            particles.add(new Particle(n, random.nextDouble()*l, random.nextDouble()*l, v, Math.toRadians(random.nextDouble() * 360), r, 0));
+            particles.add(new Particle(n, random.nextDouble()*l, random.nextDouble()*l, v, random.nextDouble() * 2 * Math.PI, r, 0));
             n--;
         }
 
