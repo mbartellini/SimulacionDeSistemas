@@ -4,8 +4,8 @@ from PIL import Image
 from tqdm import tqdm
 
 FRAME_DURATION = 150  # ms
-X_AX = 100
-Y_AX = 100
+X_AX = 7
+Y_AX = 7
 
 
 # Read particle data from file
@@ -52,7 +52,7 @@ def process_particles(ax, particles):
 
 # Main function
 def main():
-    data = read_particle_data('../DynamicCA.txt')
+    data = read_particle_data('DynamicCA.txt')
 
     fig = plt.figure()
     ax = plt.gca()
