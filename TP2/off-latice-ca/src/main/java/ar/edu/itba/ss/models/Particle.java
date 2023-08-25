@@ -7,16 +7,16 @@ import java.util.Random;
 
 public class Particle {
     public final long id;
-    public double x, y, v, tita;
+    public double x, y, v, theta;
 
     public final double r, property;
 
-    public Particle(long id, double x, double y, double v, double tita, double r, double property) {
+    public Particle(long id, double x, double y, double v, double theta, double r, double property) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.v = v;
-        this.tita = tita;
+        this.theta = theta;
         this.r = r;
         this.property = property;
     }

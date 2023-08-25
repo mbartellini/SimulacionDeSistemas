@@ -61,10 +61,11 @@ public class Main {
                 List <Particle> newGen = new ArrayList<>();
 
                 for (Map.Entry<Particle, List<Particle>> particle : neighbors.entrySet()) {
-                    double px = 0.0, py = 0.0, pv = particle.getKey().v, pr = particle.getKey().r, ptita = particle.getKey().tita;
+                    double px, py, pv = particle.getKey().v, pr = particle.getKey().r, ptheta;
+                    double psin = Math.sin(particle.getKey().theta), pcos = Math.cos(particle.getKey().theta);
 
-                    px = particle.getKey().x + deltaT*Math.cos(particle.getKey().tita)*particle.getKey().v;
-                    py = particle.getKey().y + deltaT*Math.sin(particle.getKey().tita)*particle.getKey().v;
+                    px = particle.getKey().x + deltaT*Math.cos(particle.getKey().theta)*particle.getKey().v;
+                    py = particle.getKey().y + deltaT*Math.sin(particle.getKey().theta)*particle.getKey().v;
 
                     while (px < 0.0) {
                         px = (L + px);
@@ -81,15 +82,14 @@ public class Main {
                     }
 
                     for (Particle particleNeighbor : particle.getValue()) {
-                        ptita += particleNeighbor.tita;
+                        psin += Math.sin(particleNeighbor.theta);
+                        pcos += Math.cos(particleNeighbor.theta);
                     }
 
-                    ptita /= (Integer.valueOf(particle.getValue().size() + 1).doubleValue());
+                    ptheta = Math.atan2(psin, pcos) + noise * (random.nextDouble() - 0.5);
 
-                    ptita += (random.nextDouble() * noise) - noise/2;
-
-                    newGen.add(new Particle(particle.getKey().id, px, py, pv, ptita, pr, 0));
-                    writer.write(String.format("%d %g %g %g %g %g\n", particle.getKey().id, px, py, pv, pr, ptita));
+                    newGen.add(new Particle(particle.getKey().id, px, py, pv, ptheta, pr, 0));
+                    writer.write(String.format("%d %g %g %g %g %g\n", particle.getKey().id, px, py, pv, pr, ptheta));
                 }
 
                 particles = newGen;
