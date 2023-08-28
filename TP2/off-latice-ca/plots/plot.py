@@ -2,10 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
+import toml
 
-FRAME_DURATION = 150  # ms
-X_AX = 7
-Y_AX = 7
+config = toml.load("./config.toml")['simulation']
+FRAME_DURATION = config['frame_duration']
+X_AX = config['L']
+Y_AX = config['L']
+width = config['width']
+length = config['length']
 
 
 # Read particle data from file
@@ -43,11 +47,11 @@ def process_particles(ax, particles):
     velocities = np.array([particle['v'] for particle in particles])
     thetas = np.array([particle['theta'] for particle in particles])
 
-    dx = velocities * np.cos(thetas)
-    dy = velocities * np.sin(thetas)
+    dx = velocities * np.cos(thetas) * length
+    dy = velocities * np.sin(thetas) * length
 
     for x, y, dx_i, dy_i in zip(positions[:, 0], positions[:, 1], dx, dy):
-        ax.arrow(x, y, dx_i, dy_i, width=0.002, length_includes_head=True, fc='blue', ec='blue')
+        ax.arrow(x, y, dx_i, dy_i, width=width, length_includes_head=True, fc='blue', ec='blue')
 
 
 # Main function
@@ -85,7 +89,7 @@ def main():
     plt.close(fig)
 
     # Save the frames as a GIF
-    frames[0].save('simulation.gif', format='GIF', append_images=frames[1:], save_all=True,
+    frames[0].save('plots/simulation.gif', format='GIF', append_images=frames[1:], save_all=True,
                    duration=FRAME_DURATION,
                    loop=0)
 

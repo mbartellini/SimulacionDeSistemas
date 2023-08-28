@@ -1,7 +1,10 @@
 [simulation]
-N = 300
+N = 1
 L = 100
-noise = 1.0
+noise = 0.0
 v = 1.0
 r = 1.0
 iter = 100
+frame_duration = 100
+width = 2
+length = 2
