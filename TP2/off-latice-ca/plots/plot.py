@@ -3,6 +3,8 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 import toml
+from utils.utils import angle_to_color
+
 
 config = toml.load("./config.toml")['simulation']
 FRAME_DURATION = config['frame_duration']
@@ -50,8 +52,9 @@ def process_particles(ax, particles):
     dx = velocities * np.cos(thetas) * length
     dy = velocities * np.sin(thetas) * length
 
-    for x, y, dx_i, dy_i in zip(positions[:, 0], positions[:, 1], dx, dy):
-        ax.arrow(x, y, dx_i, dy_i, width=width, length_includes_head=True, fc='blue', ec='blue')
+    for x, y, dx_i, dy_i, theta in zip(positions[:, 0], positions[:, 1], dx, dy, thetas):
+        ax.arrow(x, y, dx_i, dy_i, width=width, length_includes_head=True,
+                 fc=angle_to_color(theta), ec=angle_to_color(theta))
 
 
 # Main function
@@ -81,7 +84,6 @@ def main():
 
         process_particles(ax, particles)
 
-        plt.title(f'Iteration {iteration}')
         fig.canvas.draw()
         frame = np.array(fig.canvas.renderer.buffer_rgba())
         frames.append(Image.fromarray(frame))
