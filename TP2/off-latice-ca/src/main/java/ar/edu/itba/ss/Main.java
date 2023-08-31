@@ -13,10 +13,10 @@ import com.moandjiezana.toml.Toml;
  *
  */
 public class Main {
-    static final String OUTPUT_FILE = "DynamicCA.txt";
+    static final String OUTPUT_FILE = "data/tp2/DynamicCA.txt";
     public static void main(String[] args) {
-        Double v = 1.0, noise = 0.1, r = 1.0;
-        Long N = 100L, L = 10L, iter = 100L, deltaT = 1L;
+        Double v = 1.0, noise = 0.1, r = 1.0, L = 10.;
+        Long N = 100L, iter = 100L, deltaT = 1L;
         // Set the seed for the random number generator
         long seed = 123456789L; // Change this seed value to any long value preferred
 
@@ -24,7 +24,7 @@ public class Main {
             InputStream inputStream = new FileInputStream("config.toml");
             Toml toml = new Toml().read(inputStream);
             N = toml.getLong("simulation.N", N);
-            L = toml.getLong("simulation.L", L);
+            L = toml.getDouble("simulation.L", L);
             iter = toml.getLong("simulation.iter", iter);
             seed = toml.getLong("simulation.seed", seed);
             deltaT = toml.getLong("simulation.deltaT", deltaT);
@@ -44,11 +44,15 @@ public class Main {
 
             // Initial random particle list.
             List<Particle> particles = Particle.randomList(N, v, r, L, random);
+            writer.write("0\n");
+            for (Particle particle : particles) {
+                writer.write(String.format("%d %g %g %g %g %g\n", particle.id, particle.x, particle.y, particle.v, particle.r, particle.theta));
+            }
 
-            Long gridCount = Math.floorDiv(L, r.longValue());
+            Long gridCount = (long) Math.floor(L / r);
             double gridSize = (double) L /gridCount;
 
-            for (long i = 0; i < iter; i++) {
+            for (long i = 1; i <= iter; i++) {
 
                 CellIndexMethod cim = new CellIndexMethod(gridSize, gridCount, gridCount, r, false);
                 cim.insertParticles(particles);
