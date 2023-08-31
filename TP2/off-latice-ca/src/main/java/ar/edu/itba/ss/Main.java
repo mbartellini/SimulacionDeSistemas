@@ -50,7 +50,7 @@ public class Main {
 
             for (long i = 0; i < iter; i++) {
 
-                CellIndexMethod cim = new CellIndexMethod(gridSize, gridCount, gridCount, r, true);
+                CellIndexMethod cim = new CellIndexMethod(gridSize, gridCount, gridCount, r, false);
                 cim.insertParticles(particles);
 
                 Map<Particle, List<Particle>> neighbors = cim.getNeighbors(particles);
