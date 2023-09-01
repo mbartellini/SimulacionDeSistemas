@@ -21,7 +21,7 @@ public class Particle {
         this.property = property;
     }
 
-    public static List<Particle> randomList(long n, Double v, Double r, Long l, Random random) {
+    public static List<Particle> randomList(long n, Double v, Double r, Double l, Random random) {
         ArrayList<Particle> particles = new ArrayList<>();
 
         while (n != 0) {
