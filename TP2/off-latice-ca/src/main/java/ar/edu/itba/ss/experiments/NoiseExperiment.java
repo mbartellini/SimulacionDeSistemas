@@ -15,20 +15,20 @@ import java.util.Random;
  * Main Simulation.
  */
 public class NoiseExperiment {
-    static final String OUTPUT_FILE_FORMAT = "data/tp2/experiments/noise/DynamicCA_%d.txt";
-    static final int EXPERIMENT_COUNT = 10;
+    static final String OUTPUT_FILE_FORMAT = "data/tp2/experiments/noise/DynamicCA_%d_%d.txt";
+    static final int MAX_NOISE_FACTOR = 10;
+    static final double DESIRED_DENSITY = 40 / Math.pow(3.1, 2);
+    static final long[] N_EXPERIMENT_VALUES = {40, 400, 4000};
 
     public static void main(String[] args) {
-        Double v = 1.0, r = 1.0, L = 10.;
-        Long N = 100L, iter = 100L, deltaT = 1L;
+        Double v = 1.0, r = 1.0;
+        Long iter = 100L, deltaT = 1L;
         // Set the seed for the random number generator
         long seed = 123456789L; // Change this seed value to any long value preferred
 
         try {
             InputStream inputStream = new FileInputStream("config.toml");
             Toml toml = new Toml().read(inputStream);
-            N = toml.getLong("simulation.N", N);
-            L = toml.getDouble("simulation.L", L);
             iter = toml.getLong("simulation.iter", iter);
             seed = toml.getLong("simulation.seed", seed);
             deltaT = toml.getLong("simulation.deltaT", deltaT);
@@ -43,68 +43,71 @@ public class NoiseExperiment {
         Random random = new Random(seed);
 
         try {
-            for (int experimentNumber = 0; experimentNumber <= EXPERIMENT_COUNT; experimentNumber++) {
-                double noise = 2 * Math.PI * experimentNumber / EXPERIMENT_COUNT;
-                BufferedWriter writer = new BufferedWriter(new FileWriter(String.format(OUTPUT_FILE_FORMAT, experimentNumber)));
+            for (long N : N_EXPERIMENT_VALUES) {
+                double L = Math.sqrt(N / DESIRED_DENSITY);
+                for (int noiseFactor = 0; noiseFactor <= MAX_NOISE_FACTOR; noiseFactor++) {
+                    double noise = 2 * Math.PI * noiseFactor / MAX_NOISE_FACTOR;
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(String.format(OUTPUT_FILE_FORMAT, N, noiseFactor)));
 
-                // Initial random particle list.
-                List<Particle> particles = Particle.randomList(N, v, r, L, random);
-                writer.write("0\n");
-                for (Particle particle : particles) {
-                    writer.write(String.format("%d %g %g %g %g %g\n", particle.id, particle.x, particle.y, particle.v, particle.r, particle.theta));
-                }
-
-                Long gridCount = (long) Math.floor(L / r);
-                double gridSize = (double) L / gridCount;
-
-                for (int i = 1; i <= iter; i++) {
-
-                    CellIndexMethod cim = new CellIndexMethod(gridSize, gridCount, gridCount, r, true);
-                    cim.insertParticles(particles);
-
-                    Map<Particle, List<Particle>> neighbors = cim.getNeighbors(particles);
-
-                    // Logic of change & Write generation to output file. (Dynamically)
-                    writer.write(String.format("%d\n", i));
-
-                    List<Particle> newGen = new ArrayList<>();
-
-                    for (Map.Entry<Particle, List<Particle>> particle : neighbors.entrySet()) {
-                        double px, py, pv = particle.getKey().v, pr = particle.getKey().r, ptheta;
-                        double psin = Math.sin(particle.getKey().theta), pcos = Math.cos(particle.getKey().theta);
-
-                        px = particle.getKey().x + deltaT * Math.cos(particle.getKey().theta) * particle.getKey().v;
-                        py = particle.getKey().y + deltaT * Math.sin(particle.getKey().theta) * particle.getKey().v;
-
-                        while (px < 0.0) {
-                            px = (L + px);
-                        }
-                        while (py < 0.0) {
-                            py = (L + py);
-                        }
-
-                        while (px > L) {
-                            px = px - L;
-                        }
-                        while (py > L) {
-                            py = py - L;
-                        }
-
-                        for (Particle particleNeighbor : particle.getValue()) {
-                            psin += Math.sin(particleNeighbor.theta);
-                            pcos += Math.cos(particleNeighbor.theta);
-                        }
-
-                        ptheta = Math.atan2(psin, pcos) + noise * (random.nextDouble() - 0.5);
-
-                        newGen.add(new Particle(particle.getKey().id, px, py, pv, ptheta, pr, 0));
-                        writer.write(String.format("%d %g %g %g %g %g\n", particle.getKey().id, px, py, pv, pr, ptheta));
+                    // Initial random particle list.
+                    List<Particle> particles = Particle.randomList(N, v, r, L, random);
+                    writer.write("0\n");
+                    for (Particle particle : particles) {
+                        writer.write(String.format("%d %g %g %g %g %g\n", particle.id, particle.x, particle.y, particle.v, particle.r, particle.theta));
                     }
 
-                    particles = newGen;
-                }
+                    Long gridCount = (long) Math.floor(L / r);
+                    double gridSize = (double) L / gridCount;
 
-                writer.close();
+                    for (int i = 1; i <= iter; i++) {
+
+                        CellIndexMethod cim = new CellIndexMethod(gridSize, gridCount, gridCount, r, true);
+                        cim.insertParticles(particles);
+
+                        Map<Particle, List<Particle>> neighbors = cim.getNeighbors(particles);
+
+                        // Logic of change & Write generation to output file. (Dynamically)
+                        writer.write(String.format("%d\n", i));
+
+                        List<Particle> newGen = new ArrayList<>();
+
+                        for (Map.Entry<Particle, List<Particle>> particle : neighbors.entrySet()) {
+                            double px, py, pv = particle.getKey().v, pr = particle.getKey().r, ptheta;
+                            double psin = Math.sin(particle.getKey().theta), pcos = Math.cos(particle.getKey().theta);
+
+                            px = particle.getKey().x + deltaT * Math.cos(particle.getKey().theta) * particle.getKey().v;
+                            py = particle.getKey().y + deltaT * Math.sin(particle.getKey().theta) * particle.getKey().v;
+
+                            while (px < 0.0) {
+                                px = (L + px);
+                            }
+                            while (py < 0.0) {
+                                py = (L + py);
+                            }
+
+                            while (px > L) {
+                                px = px - L;
+                            }
+                            while (py > L) {
+                                py = py - L;
+                            }
+
+                            for (Particle particleNeighbor : particle.getValue()) {
+                                psin += Math.sin(particleNeighbor.theta);
+                                pcos += Math.cos(particleNeighbor.theta);
+                            }
+
+                            ptheta = Math.atan2(psin, pcos) + noise * (random.nextDouble() - 0.5);
+
+                            newGen.add(new Particle(particle.getKey().id, px, py, pv, ptheta, pr, 0));
+                            writer.write(String.format("%d %g %g %g %g %g\n", particle.getKey().id, px, py, pv, pr, ptheta));
+                        }
+
+                        particles = newGen;
+                    }
+
+                    writer.close();
+                }
             }
         } catch (IOException e) {
             System.err.println("Error while writing to " + OUTPUT_FILE_FORMAT);
