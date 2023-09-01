@@ -60,7 +60,6 @@ def process_particles(ax, particles):
                  fc=angle_to_color(theta), ec=angle_to_color(theta))
 
 
-
 def calculate_order(velocities_and_angles: List[Tuple[float, float]]) -> float:
     sum_of_velocities = (0, 0)
     total_velocity = 0
@@ -74,7 +73,7 @@ def calculate_order(velocities_and_angles: List[Tuple[float, float]]) -> float:
 # Main function
 def main():
     for experiment_number in range(0, 11):
-        data = read_particle_data('data/tp2/experiments/noise/DynamicCA_' + str(experiment_number) + '.txt')
+        data = read_particle_data('data/tp2/experiments/noise/DynamicCA_40_' + str(experiment_number) + '.txt')
 
         fig = plt.figure()
         ax = plt.gca()
@@ -120,8 +119,11 @@ def main():
     ]
     fig = plt.figure()
     ax = plt.gca()
+    ax.grid()
+    ax.set_xlabel('Iteración')
+    ax.set_ylabel(r'$v_a$')
     for experiment_id, experiment_format, experiment_label in EXPERIMENT_SET:
-        data = read_particle_data('data/tp2/experiments/noise/DynamicCA_' + str(experiment_id) + '.txt')
+        data = read_particle_data('data/tp2/experiments/noise/DynamicCA_40_' + str(experiment_id) + '.txt')
         x_axis = []
         order = []
         for iteration, particles in data:
@@ -133,29 +135,41 @@ def main():
     plt.savefig('figs/tp2/experiments/noise/time_graph.png')
 
     # Va vs noise
-    PERMANENT_ITERATION = 20
     fig = plt.figure()
     ax = plt.gca()
-    orders = []
-    noises = []
-    for experiment_number in range(0, 11):
-        data = read_particle_data('data/tp2/experiments/noise/DynamicCA_' + str(experiment_number) + '.txt')
-        noises.append(2 * math.pi * experiment_number / 10)
+    ax.grid()
+    ax.set_xlabel(r'$\eta$')
+    ax.set_ylabel(r'$v_a$')
+    EXPERIMENT_SET = [
+        (40, 20, 'x:b', r'$N = 40$'),
+        (400, 60, 'x:r', r'$N = 400$'),
+        (4000, 100, 'x:g', r'$N = 4000$'),
+    ]
+    for N, permanent_iteration, fmt, label in EXPERIMENT_SET:
+        orders = []
+        noises = []
+        for experiment_number in range(0, 11):
+            data = read_particle_data(f"data/tp2/experiments/noise/DynamicCA_{N}_{experiment_number}.txt")
+            noises.append(2 * math.pi * experiment_number / 10)
 
-        order_history = []
-        for iteration, particles in data:
-            if iteration < PERMANENT_ITERATION:
-                continue
-            current_order = calculate_order([(particle['v'], particle['theta']) for particle in particles])
-            order_history.append(current_order)
-        orders.append((statistics.mean(order_history), statistics.stdev(order_history)))
+            order_history = []
+            for iteration, particles in data:
+                if iteration < permanent_iteration:
+                    continue
+                current_order = calculate_order([(particle['v'], particle['theta']) for particle in particles])
+                order_history.append(current_order)
+            orders.append((statistics.mean(order_history), statistics.stdev(order_history)))
 
-    ax.errorbar(
-        noises,
-        [order[0] for order in orders],
-        yerr=[order[1] for order in orders]
-    )
+        ax.errorbar(
+            noises,
+            [order[0] for order in orders],
+            fmt=fmt,
+            yerr=[order[1] for order in orders],
+            label=r'$N = {{{}}}$'.format(N)
+        )
+    plt.legend()
     plt.savefig('figs/tp2/experiments/noise/order_vs_noise.png')
+
 
 if __name__ == '__main__':
     main()
