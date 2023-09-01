@@ -16,10 +16,10 @@ import java.util.Random;
  */
 public class DensityExperiment {
     static final String OUTPUT_FILE_FORMAT = "data/tp2/experiments/density/DynamicCA_%d_%d.txt";
-    static final int MAX_POPULATION_SIZE = 100, POPULATION_STEP = 10;
+    static final int MAX_POPULATION_SIZE = 5000, POPULATION_STEP = 500;
 
     public static void main(String[] args) {
-        Double v = 1.0, r = 1.0, L = 3.1;
+        Double v = 1.0, r = 1.0, L = 20.0;
         Long iter = 100L, deltaT = 1L;
         // Set the seed for the random number generator
         long seed = 123456789L; // Change this seed value to any long value preferred
@@ -44,7 +44,7 @@ public class DensityExperiment {
             for (int noiseFactor = 0; noiseFactor <= 2; noiseFactor++) {
                 double noise = noiseFactor * Math.PI;
                 for (long N = 0; N <= MAX_POPULATION_SIZE; N += POPULATION_STEP) {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(String.format(OUTPUT_FILE_FORMAT, noiseFactor, N)));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(String.format(OUTPUT_FILE_FORMAT, N, noiseFactor)));
 
                     // Initial random particle list.
                     List<Particle> particles = Particle.randomList(N, v, r, L, random);
