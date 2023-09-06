@@ -11,7 +11,7 @@ import java.util.List;
 public class WallCollisionTest {
 
     private static final double[] ANGLES = {Math.PI/4};
-    private static final double RADIUS = 1, V = 1;
+    private static final double RADIUS = 1, V = 1, MASS = 0;
     private static List<Particle> particles;
 
     @Before
@@ -19,7 +19,7 @@ public class WallCollisionTest {
         particles = new ArrayList<>();
         for(double angle : ANGLES) {
             particles.add(new Particle(
-                    0, 0, 0, V, angle, RADIUS, null)
+                    0, 0, 0, V, angle, RADIUS, MASS)
             ); // Enclosure, id and position are irrelevant to test collision
         }
     }
