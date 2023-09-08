@@ -1,15 +1,31 @@
 package ar.edu.itba.ss.models;
 
 public class Event implements Comparable<Event> {
-    private final double timeToCollision;
-    private final Particle[] particlesInvolved;
-    private final Collision type;
+    private double timeToCollision;
 
+    public Particle[] getParticlesInvolved() {
+        return particlesInvolved;
+    }
+
+    private Particle[] particlesInvolved;
+    private Collision type;
+
+    public void setTimeToCollision(double timeToCollision) {
+        this.timeToCollision = timeToCollision;
+    }
+
+    public void setType(Collision type) {
+        this.type = type;
+    }
 
     public Event(double timeToCollision, Particle[] particlesInvolved, Collision type) {
         this.timeToCollision = timeToCollision;
         this.particlesInvolved = particlesInvolved;
         this.type = type;
+    }
+
+    public Event(Particle[] particlesInvolved) {
+        this.particlesInvolved = particlesInvolved;
     }
 
     public void applyCollision() {

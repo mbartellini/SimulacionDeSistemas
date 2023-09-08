@@ -28,25 +28,41 @@ public class Particle {
         this.mass = mass;
     }
 
-    public static List<Particle> randomList(long n, Double v, Double r, Double mass, Double l, Random random) {
-        ArrayList<Particle> particles = new ArrayList<>();
+    public static Particle[] generateRandom(int n, Double v, Double r, Double mass, Double l, Random random) {
+        Particle[] particles = new Particle[n];
 
-        while (n != 0) {
-            particles.add(new Particle(n,
+        for (int i = 0; i < particles.length; i++) {
+            final double angle = random.nextDouble() * 2 * Math.PI;
+            particles[i] = new Particle(i,
                     random.nextDouble()*l,
-                    random.nextDouble()*l, v,
-                    random.nextDouble() * 2 * Math.PI, r, mass));
-            n--;
+                    random.nextDouble()*l, v * Math.cos(angle),
+                    v * Math.sin(angle), r, mass);
         }
 
         return particles;
     }
 
     /*
-        Method to figure out what the next event will be.
+        Method to figure out what the next event will be for particle p
      */
-    public static Event nextCollision(List<Particle> particles) {
-        return null;
+    public Event nextCollision(Particle[] particles, Enclosure enclosure) {
+        Event next = nextCollisionToWall(enclosure);
+        double minTime = next.getTimeToCollision();
+        Integer minIdx = null;
+        for (int i = 0; i < particles.length; i++) {
+            if(this.equals(particles[i])) continue;
+            final double ct = collisionTimeToOther(particles[i]);
+            if(ct < minTime) {
+                minTime = ct;
+                minIdx = i;
+            }
+        }
+
+        if(minIdx != null) {
+            next = new Event(minTime, new Particle[] {this, particles[minIdx]}, Collision.WITH_OTHER);
+        }
+
+        return next;
     }
 
     public double getX() {
@@ -65,11 +81,6 @@ public class Particle {
         return Math.atan2(vy, vx);
     }
 
-    public static void updateState(List<Particle> particles, Event details) {
-        particles.forEach(p -> p.updatePosition(details.getTimeToCollision()));
-        details.applyCollision();
-    }
-
     /*
         Method updates particle position after a given time.
         Method assumes particle DOES NOT collide with anything during that time.
@@ -79,11 +90,21 @@ public class Particle {
         y += vy * time;
     }
 
-    public double collisionTimeToWall(Enclosure enclosure) {
+    public Event nextCollisionToWall(Enclosure enclosure) {
+        final Event next = new Event(new Particle[] {this});
         final double xDist = vx > 0? enclosure.distanceToRightWall(this) : enclosure.distanceToLeftWall(this);
         final double yDist = vy > 0? enclosure.distanceToTopWall(this) : enclosure.distanceToBottomWall(this);
 
-        return Math.min(xDist/vx, yDist/vy);
+        final double tx = xDist/vx, ty = yDist/vy;
+        if(tx < ty) {
+            next.setType(Collision.WITH_HORIZONTAL_WALL);
+            next.setTimeToCollision(tx);
+        } else {
+            next.setType(Collision.WITH_VERTICAL_WALL);
+            next.setTimeToCollision(ty);
+        }
+
+        return next;
     }
 
     public double collisionTimeToOther(Particle o) {
