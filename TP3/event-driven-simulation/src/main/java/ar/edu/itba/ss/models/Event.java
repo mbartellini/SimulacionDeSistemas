@@ -40,4 +40,8 @@ public class Event implements Comparable<Event> {
     public double getTimeToCollision() {
         return timeToCollision;
     }
+
+    public Collision getType() {
+        return type;
+    }
 }

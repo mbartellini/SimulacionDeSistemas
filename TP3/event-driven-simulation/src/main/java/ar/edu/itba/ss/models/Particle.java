@@ -46,7 +46,7 @@ public class Particle {
         Method to figure out what the next event will be for particle p
      */
     public Event nextCollision(Particle[] particles, Enclosure enclosure) {
-        Event next = nextCollisionToWall(enclosure);
+        Event next = enclosure.nextCollisionToWall(this);
         double minTime = next.getTimeToCollision();
         Integer minIdx = null;
         for (int i = 0; i < particles.length; i++) {
@@ -88,23 +88,6 @@ public class Particle {
     public void updatePosition(double time) {
         x += vx * time;
         y += vy * time;
-    }
-
-    public Event nextCollisionToWall(Enclosure enclosure) {
-        final Event next = new Event(new Particle[] {this});
-        final double xDist = vx > 0? enclosure.distanceToRightWall(this) : enclosure.distanceToLeftWall(this);
-        final double yDist = vy > 0? enclosure.distanceToTopWall(this) : enclosure.distanceToBottomWall(this);
-
-        final double tx = xDist/vx, ty = yDist/vy;
-        if(tx < ty) {
-            next.setType(Collision.WITH_HORIZONTAL_WALL);
-            next.setTimeToCollision(tx);
-        } else {
-            next.setType(Collision.WITH_VERTICAL_WALL);
-            next.setTimeToCollision(ty);
-        }
-
-        return next;
     }
 
     public double collisionTimeToOther(Particle o) {
