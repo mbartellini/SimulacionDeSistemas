@@ -44,7 +44,6 @@ public class Wall {
            p.y < Math.min(start.y, finish.y) ||
            p.y > Math.max(start.y, finish.y)) return false;
 
-
         return Math.abs((start.x - finish.x)*(p.y - start.y) - (p.x - start.x)*(start.y - finish.y)) < EPS;
     }
 
