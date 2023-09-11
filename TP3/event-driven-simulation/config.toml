@@ -1,0 +1,5 @@
+[simulation]
+N = 100
+L = 0.03
+iter = 100
+deltaT = 1

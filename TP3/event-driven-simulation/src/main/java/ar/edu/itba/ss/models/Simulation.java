@@ -38,6 +38,7 @@ public class Simulation {
             final Event current = events.poll();
             if(current == null) return;
             updateState(this.particles, current);
+            ellapsed += current.getTimeToCollision();
             enclosure.addImpulse(current);
             writeState(i);
 
