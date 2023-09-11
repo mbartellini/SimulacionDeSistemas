@@ -35,7 +35,8 @@ public class Particle {
             final double angle = random.nextDouble() * 2 * Math.PI;
             particles[i] = new Particle(i,
                     random.nextDouble()*l,
-                    random.nextDouble()*l, v * Math.cos(angle),
+                    (random.nextDouble() - 0.5) * l,
+                    v * Math.cos(angle),
                     v * Math.sin(angle), r, mass);
         }
 
@@ -141,5 +142,9 @@ public class Particle {
 
     public double getMass() {
         return mass;
+    }
+
+    public long getId() {
+        return id;
     }
 }

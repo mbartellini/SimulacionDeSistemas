@@ -5,14 +5,24 @@ import ar.edu.itba.ss.models.Collision;
 import ar.edu.itba.ss.models.Event;
 import ar.edu.itba.ss.models.Particle;
 
+import java.util.Arrays;
+
 public class Wall {
 
     private final Point start, finish;
     private static final double EPS = 0.0000001;
+    private final double length;
+    private final Enclosure.Side side;
 
-    public Wall(double x0, double y0, double x1, double y1) {
+    public Enclosure.Side getSide() {
+        return side;
+    }
+
+    public Wall(double x0, double y0, double x1, double y1, Enclosure.Side side) {
         start = new Point(x0, y0);
         finish = new Point(x1, y1);
+        this.side = side;
+        length = start.distanceTo(finish);
     }
 
     public Event collisionWith(Particle p) {
@@ -21,20 +31,25 @@ public class Wall {
         if(intercept == null || !containsPoint(intercept))
             return null;
 
-        final double tx = (intercept.x - p.getX() - p.getRadius()) / p.getVx(),
-                     ty = (intercept.y - p.getY() - p.getRadius()) / p.getVy();
-
-        if(Math.abs(tx - ty) > EPS || tx < 0) {
-            return null;
+        double t;
+        Collision type;
+        if(Math.abs(start.x - finish.x) < EPS) {
+            t = (intercept.x - p.getX() - p.getRadius()) / p.getVx();
+            type = Collision.WITH_HORIZONTAL_WALL;
+        }
+        else if(Math.abs(start.y - finish.y) < EPS) {
+            t = (intercept.y - p.getY() - p.getRadius()) / p.getVy();
+            type = Collision.WITH_VERTICAL_WALL;
+        }
+        else {
+            throw new IllegalStateException("Wall is neither horizontal nor vertical");
         }
 
-        Event e;
-        if(Math.abs(start.x - finish.x) < EPS)
-            e = new Event(tx, new Particle[]{p}, Collision.WITH_HORIZONTAL_WALL);
-        else if(Math.abs(start.y - finish.y) < EPS)
-            e = new Event(tx, new Particle[]{p}, Collision.WITH_VERTICAL_WALL);
-        else
-            throw new IllegalStateException("Wall is neither horizontal nor vertical");
+        if(Math.abs(t) < EPS)
+            return null;
+
+        Event e = new Event(t, new Particle[] {p}, type);
+        e.setSide(side);
         return e;
     }
 
@@ -64,9 +79,16 @@ public class Wall {
         return new Point((b1 * c0 - b0 * c1) / det, (-a1 * c0 + a0 * c1) / det);
     }
 
-    public static void main(String[] args) {
+    public double getLength() {
+        return length;
     }
 
     private record Point(double x, double y) {
+
+        private double distanceTo(Point o) {
+            double dx = x - o.x, dy = y - o.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
     }
 }

@@ -1,8 +1,6 @@
 package ar.edu.itba.ss.tests;
 
 import ar.edu.itba.ss.models.Particle;
-import ar.edu.itba.ss.models.enclosure.Enclosure;
-import ar.edu.itba.ss.models.enclosure.SquareEnclosure;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

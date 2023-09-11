@@ -1,5 +1,7 @@
 package ar.edu.itba.ss.models;
 
+import ar.edu.itba.ss.models.enclosure.Enclosure;
+
 public class Event implements Comparable<Event> {
     private double timeToCollision;
 
@@ -7,8 +9,10 @@ public class Event implements Comparable<Event> {
         return particlesInvolved;
     }
 
-    private Particle[] particlesInvolved;
+    private final Particle[] particlesInvolved;
     private Collision type;
+
+    private Enclosure.Side side;
 
     public void setTimeToCollision(double timeToCollision) {
         this.timeToCollision = timeToCollision;
@@ -43,5 +47,18 @@ public class Event implements Comparable<Event> {
 
     public Collision getType() {
         return type;
+    }
+
+    public void updateTime(double tc) {
+        if(tc > timeToCollision) throw new IllegalStateException("Updating time is greater than collision time");
+        timeToCollision -= tc;
+    }
+
+    public Enclosure.Side getSide() {
+        return side;
+    }
+
+    public void setSide(Enclosure.Side side) {
+        this.side = side;
     }
 }
