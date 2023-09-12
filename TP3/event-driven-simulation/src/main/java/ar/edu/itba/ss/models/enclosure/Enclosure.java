@@ -11,9 +11,12 @@ public class Enclosure {
 
     protected final List<Wall> walls = new ArrayList<>();
     private double leftImpulse = 0.0, rightImpulse = 0.0;
-    private final double leftPerimeter, rightPerimeter;
+    private final double leftPerimeter, rightPerimeter, sideLength, openingLength;
 
     public Enclosure(double sideLength, double openingLength) {
+        this.sideLength = sideLength;
+        this.openingLength = openingLength;
+
         walls.add(new Wall(0, -sideLength/2, 0, sideLength/2, Side.LEFT));
         walls.add(new Wall(0, sideLength/2, sideLength, sideLength/2, Side.LEFT));
         walls.add(new Wall(sideLength, sideLength/2, sideLength, openingLength/2, Side.LEFT));
@@ -83,6 +86,17 @@ public class Enclosure {
             case RIGHT -> rightImpulse += impulse;
             default -> throw new IllegalStateException("Invalid side");
         }
+    }
+
+    public boolean isInside(Particle p) {
+        final double x = p.getX(), y = p.getY();
+        if(x < 0.0 || x > 2 * sideLength) {
+            return false;
+        }
+
+        if(x < sideLength && Math.abs(y) > sideLength/2) {
+            return false;
+        } else return !(x > sideLength) || !(Math.abs(y) > openingLength / 2);
     }
 
     public enum Side {

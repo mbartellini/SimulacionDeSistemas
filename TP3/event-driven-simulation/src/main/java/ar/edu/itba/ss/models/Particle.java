@@ -53,6 +53,9 @@ public class Particle {
         for (int i = 0; i < particles.length; i++) {
             if(this.equals(particles[i])) continue;
             final double ct = collisionTimeToOther(particles[i]);
+
+            if(ct < 0.0) continue;
+
             if(ct < minTime) {
                 minTime = ct;
                 minIdx = i;

@@ -14,22 +14,14 @@ public class Event implements Comparable<Event> {
 
     private Enclosure.Side side;
 
-    public void setTimeToCollision(double timeToCollision) {
-        this.timeToCollision = timeToCollision;
-    }
-
-    public void setType(Collision type) {
-        this.type = type;
-    }
-
     public Event(double timeToCollision, Particle[] particlesInvolved, Collision type) {
+        if(timeToCollision < 0.0) {
+            throw new IllegalArgumentException("Time to collision must be positive");
+        }
+
         this.timeToCollision = timeToCollision;
         this.particlesInvolved = particlesInvolved;
         this.type = type;
-    }
-
-    public Event(Particle[] particlesInvolved) {
-        this.particlesInvolved = particlesInvolved;
     }
 
     public void applyCollision() {

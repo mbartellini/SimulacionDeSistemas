@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class Wall {
 
     private final Point start, finish;
-    private static final double EPS = 0.0000001;
+    private static final double EPS = 0.00000001;
     private final double length;
     private final Enclosure.Side side;
 
@@ -34,18 +34,18 @@ public class Wall {
         double t;
         Collision type;
         if(Math.abs(start.x - finish.x) < EPS) {
-            t = (intercept.x - p.getX() - p.getRadius()) / p.getVx();
-            type = Collision.WITH_HORIZONTAL_WALL;
+            t = (Math.abs(intercept.x - p.getX()) - p.getRadius()) / Math.abs(p.getVx());
+            type = Collision.WITH_VERTICAL_WALL;
         }
         else if(Math.abs(start.y - finish.y) < EPS) {
-            t = (intercept.y - p.getY() - p.getRadius()) / p.getVy();
-            type = Collision.WITH_VERTICAL_WALL;
+            t = (Math.abs(intercept.y - p.getY()) - p.getRadius()) / Math.abs(p.getVy());
+            type = Collision.WITH_HORIZONTAL_WALL;
         }
         else {
             throw new IllegalStateException("Wall is neither horizontal nor vertical");
         }
 
-        if(Math.abs(t) < EPS)
+        if(t < EPS) // t = 0 or negative
             return null;
 
         Event e = new Event(t, new Particle[] {p}, type);
@@ -54,10 +54,11 @@ public class Wall {
     }
 
     private boolean containsPoint(Point p) {
-        if(p.x < Math.min(start.x, finish.x) ||
-           p.x > Math.max(start.x, finish.x) ||
-           p.y < Math.min(start.y, finish.y) ||
-           p.y > Math.max(start.y, finish.y)) return false;
+        // EPS correction: rounding error makes 0.0000000000002 technically larger than 0.0
+        if(p.x < Math.min(start.x, finish.x) - EPS ||
+           p.x > Math.max(start.x, finish.x) + EPS ||
+           p.y < Math.min(start.y, finish.y) - EPS ||
+           p.y > Math.max(start.y, finish.y) + EPS) return false;
 
         return Math.abs((start.x - finish.x)*(p.y - start.y) - (p.x - start.x)*(start.y - finish.y)) < EPS;
     }

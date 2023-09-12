@@ -2,9 +2,7 @@ package ar.edu.itba.ss.models;
 
 import ar.edu.itba.ss.models.enclosure.Enclosure;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOError;
 import java.io.IOException;
 import java.util.*;
 
@@ -16,9 +14,9 @@ public class Simulation {
     private static final String DYNAMIC = "dynamic.txt", STATIC = "static.txt";
     private static final int ERROR_STATUS = 1;
     private final long iterations;
-    private static final double V = 0.01, MASS = 1, RADIUS = 0.0015;
+    private static final double V = 1.0, MASS = 1.0, RADIUS = 0.15;
     private final double deltaT;
-    private double ellapsed = 0.0, lastPressureMeasure = 0.0;
+    private double elapsed = 0.0, lastPressureMeasure = 0.0;
 
     public Simulation(int count, long iter, double length, double deltaT, Enclosure enclosure) {
         particles = Particle.generateRandom(count, V, RADIUS, MASS, length, R);
@@ -26,28 +24,32 @@ public class Simulation {
         this.enclosure = enclosure;
         this.deltaT = deltaT;
 
-        for (Particle particle : particles) {
-            events.add(particle.nextCollision(particles, enclosure));
+        for (Particle p : particles) {
+            events.add(p.nextCollision(particles, enclosure));
         }
 
         this.iterations = iter;
     }
 
     public void run() {
+        writeStatic();
+        cleanDynamic();
+
         for(long i = 0; i < iterations; i++) {
             final Event current = events.poll();
             if(current == null) return;
             updateState(this.particles, current);
-            ellapsed += current.getTimeToCollision();
-            enclosure.addImpulse(current);
-            writeState(i);
+            elapsed += current.getTimeToCollision();
 
-            while(ellapsed - lastPressureMeasure > deltaT) {
+            if(elapsed > lastPressureMeasure + deltaT) {
                 lastPressureMeasure += deltaT;
-                System.out.printf("Left side pressure: %g\n", enclosure.getSidePressure(deltaT, Enclosure.Side.LEFT));
-                System.out.printf("Right side pressure: %g\n", enclosure.getSidePressure(deltaT, Enclosure.Side.RIGHT));
+                System.out.printf("Left pressure: %g\n", enclosure.getSidePressure(deltaT, Enclosure.Side.LEFT));
+                System.out.printf("Right pressure: %g\n", enclosure.getSidePressure(deltaT, Enclosure.Side.RIGHT));
                 enclosure.resetImpulse();
             }
+
+            enclosure.addImpulse(current);
+            writeState(i);
 
             final Iterator<Event> it = events.iterator();
             final List<Particle> involvedParticles =
@@ -85,7 +87,15 @@ public class Simulation {
         details.applyCollision();
     }
 
-    private void writeStatic() throws IOException {
+    private void cleanDynamic() {
+        try {
+            new FileWriter(Simulation.DYNAMIC, false).close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeStatic() {
         try (FileWriter fw = new FileWriter(STATIC)) {
             fw.write(String.format("%d\n%d\n", iterations, particles.length));
         } catch (IOException e) {
@@ -95,10 +105,10 @@ public class Simulation {
     }
 
     private void writeState(long iteration) {
-        try (FileWriter fw = new FileWriter(DYNAMIC)) {
-            fw.write(String.format("%d\n", iteration));
+        try (FileWriter fw = new FileWriter(DYNAMIC, true)) {
+            fw.append(String.format("%d %g\n", iteration, elapsed));
             for(Particle p : particles) {
-                fw.write(String.format("%d %g %g\n", p.getId(), p.getX(), p.getY()));
+                fw.append(String.format("%d %g %g\n", p.getId(), p.getX(), p.getY()));
             }
         } catch (IOException e) {
             System.err.printf("Error writing to %s: %s", DYNAMIC, e.getMessage());
