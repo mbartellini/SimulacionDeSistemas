@@ -88,8 +88,8 @@ public class Enclosure {
         }
     }
 
-    public boolean isInside(Particle p) {
-        final double x = p.getX(), y = p.getY();
+    public boolean containsParticle(Particle p) {
+        final double x = p.getX(), y = p.getY(), r = p.getRadius();
         if(x < 0.0 || x > 2 * sideLength) {
             return false;
         }

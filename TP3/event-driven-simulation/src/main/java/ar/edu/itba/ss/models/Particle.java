@@ -48,6 +48,9 @@ public class Particle {
      */
     public Event nextCollision(Particle[] particles, Enclosure enclosure) {
         Event next = enclosure.nextCollisionToWall(this);
+
+        if(next == null) return null;
+
         double minTime = next.getTimeToCollision();
         Integer minIdx = null;
         for (int i = 0; i < particles.length; i++) {
