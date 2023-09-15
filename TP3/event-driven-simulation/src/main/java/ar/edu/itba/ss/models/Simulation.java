@@ -11,7 +11,7 @@ public class Simulation {
     private final PriorityQueue<Event> events;
     private final Particle[] particles;
     private final Enclosure enclosure;
-    private static final String DYNAMIC = "dynamic.txt", STATIC = "static.txt";
+    private static final String DYNAMIC = "dynamic.xyz", STATIC = "static.txt";
     private static final int ERROR_STATUS = 1;
     private final long iterations;
     private static final double V = 1.0, MASS = 1.0, RADIUS = 0.15;
@@ -122,9 +122,9 @@ public class Simulation {
 
     private void writeState(long iteration) {
         try (FileWriter fw = new FileWriter(DYNAMIC, true)) {
-            fw.append(String.format("%d %g\n", iteration, elapsed));
+            fw.append(String.format("%d\n\n", particles.length));
             for(Particle p : particles) {
-                fw.append(String.format("%d %g %g\n", p.getId(), p.getX(), p.getY()));
+                fw.append(String.format("%d %g %g 0 %g %g 0 %g\n", p.getId(), p.getX(), p.getY(), p.getVx(), p.getVy(), p.getRadius()));
             }
         } catch (IOException e) {
             System.err.printf("Error writing to %s: %s", DYNAMIC, e.getMessage());
