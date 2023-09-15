@@ -34,8 +34,8 @@ public class Particle {
         for (int i = 0; i < particles.length; i++) {
             final double angle = random.nextDouble() * 2 * Math.PI;
             particles[i] = new Particle(i,
-                    random.nextDouble()*l,
-                    (random.nextDouble() - 0.5) * l,
+                    r + random.nextDouble() * (l - 2 * r),
+                    (- 0.5 * l + r) + random.nextDouble() * (l - 2 * r),
                     v * Math.cos(angle),
                     v * Math.sin(angle), r, mass);
         }

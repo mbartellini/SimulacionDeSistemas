@@ -90,13 +90,13 @@ public class Enclosure {
 
     public boolean containsParticle(Particle p) {
         final double x = p.getX(), y = p.getY(), r = p.getRadius();
-        if(x < 0.0 || x > 2 * sideLength) {
+        if(x - r < 0.0 || x + r > 2 * sideLength) {
             return false;
         }
 
-        if(x < sideLength && Math.abs(y) > sideLength/2) {
+        if(x < sideLength && Math.abs(y) + r > sideLength/2) {
             return false;
-        } else return !(x > sideLength) || !(Math.abs(y) > openingLength / 2);
+        } else return !(x > sideLength) || !(Math.abs(y) + r > openingLength / 2);
     }
 
     public enum Side {
