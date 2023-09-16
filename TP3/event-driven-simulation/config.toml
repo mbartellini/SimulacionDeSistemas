@@ -1,5 +1,5 @@
 [simulation]
-N = 100
+N = 1
 L = 3.0
-iter = 200
+iter = 2000
 deltaT = 0.01
