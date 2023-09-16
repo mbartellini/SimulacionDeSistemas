@@ -36,27 +36,20 @@ public class Simulation {
         cleanDynamic();
 
         for(long i = 0; i < iterations; i++) {
-            if(i == 241) {
+            if(i == 418) {
                 System.out.println("Breakpoint");
             }
             final Event current = events.poll();
             if(current == null) return;
             updateState(this.particles, current);
             elapsed += current.getTimeToCollision();
+            System.out.printf("%d %d\n", i, events.size());
 
-            for(Particle p : particles) {
-                if(!enclosure.containsParticle(p)) {
-                    throw new IllegalStateException(
-                            String.format("Particle %d outside enclosure: (%g, %g)", p.getId(), p.getX(), p.getY()));
-                }
-            }
-
-            if(elapsed > lastPressureMeasure + deltaT) {
-                lastPressureMeasure += deltaT;
-                System.out.printf("Left pressure: %g\n", enclosure.getSidePressure(deltaT, Enclosure.Side.LEFT));
-                System.out.printf("Right pressure: %g\n", enclosure.getSidePressure(deltaT, Enclosure.Side.RIGHT));
-                enclosure.resetImpulse();
-            }
+//            for(Particle p : particles) {
+//                if(!enclosure.containsParticle(p)) {
+//                    System.out.printf("i: %d, id: %d, pos: (%g, %g)\n", i, p.getId(), p.getX(), p.getY());
+//                }
+//            }
 
             enclosure.addImpulse(current);
             writeState(i);
