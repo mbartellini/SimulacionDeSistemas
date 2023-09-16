@@ -117,7 +117,7 @@ public class Simulation {
         try (FileWriter fw = new FileWriter(DYNAMIC, true)) {
             fw.append(String.format("%d\n\n", particles.length));
             for(Particle p : particles) {
-                fw.append(String.format("%d %g %g 0 %g %g 0 %g\n", p.getId(), p.getX(), p.getY(), p.getVx(), p.getVy(), p.getRadius()));
+                fw.append(String.format("%d %g %g %g %g %g\n", p.getId(), p.getX(), p.getY(), p.getVx(), p.getVy(), p.getRadius()));
             }
         } catch (IOException e) {
             System.err.printf("Error writing to %s: %s", DYNAMIC, e.getMessage());
