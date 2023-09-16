@@ -34,12 +34,16 @@ public class Wall {
         double t;
         Collision type;
         if(Math.abs(start.x - finish.x) < EPS) {
-            t = (Math.abs(intercept.x - p.getX()) - p.getRadius()) / Math.abs(p.getVx());
             type = Collision.WITH_VERTICAL_WALL;
+            t = (p.getVx() > 0) ?
+                    (intercept.x - p.getRadius() - p.getX()) / p.getVx() :
+                    (intercept.x + p.getRadius() - p.getX()) / p.getVx();
         }
         else if(Math.abs(start.y - finish.y) < EPS) {
-            t = (Math.abs(intercept.y - p.getY()) - p.getRadius()) / Math.abs(p.getVy());
             type = Collision.WITH_HORIZONTAL_WALL;
+            t = (p.getVy() > 0) ?
+                    (intercept.y - p.getRadius() - p.getY()) / p.getVy() :
+                    (intercept.y + p.getRadius() - p.getY()) / p.getVy();
         }
         else {
             throw new IllegalStateException("Wall is neither horizontal nor vertical");
