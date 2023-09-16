@@ -88,6 +88,14 @@ public class Wall {
         return length;
     }
 
+    public Point getStart() {
+        return start;
+    }
+
+    public Point getFinish() {
+        return finish;
+    }
+
     private record Point(double x, double y) {
 
         private double distanceTo(Point o) {
@@ -95,5 +103,9 @@ public class Wall {
             return Math.sqrt(dx * dx + dy * dy);
         }
 
+        @Override
+        public String toString() {
+            return String.format("(%.2f, %.2f)", x, y);
+        }
     }
 }
