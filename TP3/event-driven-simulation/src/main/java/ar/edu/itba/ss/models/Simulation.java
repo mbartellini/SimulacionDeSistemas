@@ -43,7 +43,7 @@ public class Simulation {
                 System.out.println("Breakpoint");
             }
             final Event current = events.poll();
-            if(current == null) return;
+            if(current == null) throw new IllegalStateException("There is no event.");
             updateState(this.particles, current);
             elapsed += current.getTimeToCollision();
             System.out.printf("%d %d\n", i, events.size());
