@@ -10,6 +10,7 @@ import java.util.List;
 public class Enclosure {
 
     protected final List<Wall> walls = new ArrayList<>();
+    protected final Collection<Corner> corners = new ArrayList<>();
     private double leftImpulse = 0.0, rightImpulse = 0.0;
     private final double leftPerimeter, rightPerimeter, sideLength, openingLength;
 
@@ -25,6 +26,10 @@ public class Enclosure {
         walls.add(new Wall(2*sideLength, -openingLength/2, sideLength, -openingLength/2, Side.RIGHT));
         walls.add(new Wall(sideLength, -openingLength/2, sideLength, -sideLength/2, Side.LEFT));
         walls.add(new Wall(sideLength, -sideLength/2, 0, -sideLength/2, Side.LEFT));
+        if (Math.abs(sideLength - openingLength) >= EPS) {
+            corners.add(new Corner(sideLength, openingLength/2));
+            corners.add(new Corner(sideLength, -openingLength/2));
+        }
 
         double lp = 0.0, rp = 0.0;
 
@@ -48,6 +53,14 @@ public class Enclosure {
             if(e == null) continue;
             if(min == null || min.compareTo(e) > 0)
                 min = e;
+        }
+        for (Corner c : corners) {
+            double timeToCorner = p.collisionTimeToOther(c);
+            if (timeToCorner < 0.0)
+                continue;
+            if (min == null || timeToCorner < min.getTimeToCollision()) {
+                min = new Event(timeToCorner, new Particle[] {p}, Collision.WITH_CORNER);
+            }
         }
 
         return min;
