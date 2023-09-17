@@ -14,7 +14,7 @@ public class Simulation {
     private static final String DYNAMIC = "./data/dynamic.xyz", STATIC = "./data/static.xyz", PRESSURE_FILE = "./data/pressure.xyz";
     private static final int ERROR_STATUS = 1;
     private final long iterations;
-    private static final double V = 1.0, MASS = 1.0, RADIUS = 0.15;
+    private static final double V = 0.01, MASS = 1.0, RADIUS = 0.0015;
     private final double deltaT;
     private double elapsed = 0.0, lastPressureMeasure = 0.0;
 

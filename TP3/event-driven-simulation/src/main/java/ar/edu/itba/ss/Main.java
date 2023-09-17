@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 public class Main {
     private static final String CONFIG = "config.toml";
-    private static final double SIDE_LENGTH = 9.0;
+    private static final double SIDE_LENGTH = 0.09;
 
     public static void main(String[] args) {
         Long N = 100L, iter = 100L;
