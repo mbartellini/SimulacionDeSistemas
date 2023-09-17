@@ -11,7 +11,7 @@ public class Simulation {
     private final PriorityQueue<Event> events;
     private final Particle[] particles;
     private final Enclosure enclosure;
-    private static final String DYNAMIC = "../data/dynamic.xyz", STATIC = "../data/static.xyz";
+    private static final String DYNAMIC = "./data/dynamic.xyz", STATIC = "./data/static.xyz";
     private static final int ERROR_STATUS = 1;
     private final long iterations;
     private static final double V = 1.0, MASS = 1.0, RADIUS = 0.15;
