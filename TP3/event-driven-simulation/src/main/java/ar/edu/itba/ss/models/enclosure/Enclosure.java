@@ -4,11 +4,15 @@ import ar.edu.itba.ss.models.Collision;
 import ar.edu.itba.ss.models.Event;
 import ar.edu.itba.ss.models.Particle;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
 
 public class Enclosure {
 
+    private static final double EPS = 0.00001;
     protected final List<Wall> walls = new ArrayList<>();
     protected final Collection<Corner> corners = new ArrayList<>();
     private double leftImpulse = 0.0, rightImpulse = 0.0;

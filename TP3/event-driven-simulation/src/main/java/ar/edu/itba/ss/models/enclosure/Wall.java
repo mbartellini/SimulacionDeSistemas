@@ -4,8 +4,7 @@ package ar.edu.itba.ss.models.enclosure;
 import ar.edu.itba.ss.models.Collision;
 import ar.edu.itba.ss.models.Event;
 import ar.edu.itba.ss.models.Particle;
-
-import java.util.Arrays;
+import ar.edu.itba.ss.models.Util;
 
 public class Wall {
 
@@ -26,26 +25,36 @@ public class Wall {
     }
 
     public Event collisionWith(Particle p) {
-        Point intercept = getIntercept(p);
-
-        if(intercept == null || !containsPoint(intercept))
-            return null;
+//        Point intercept = getIntercept(p);
+//
+//        if(intercept == null || !containsPoint(intercept))
+//            return null;
 
         double t;
         Collision type;
         if(Math.abs(start.x - finish.x) < EPS) {
             type = Collision.WITH_VERTICAL_WALL;
             t = (p.getVx() > 0) ?
-                    (intercept.x - p.getRadius() - p.getX()) / p.getVx() :
-                    (intercept.x + p.getRadius() - p.getX()) / p.getVx();
-        }
-        else if(Math.abs(start.y - finish.y) < EPS) {
+                    (this.start.x - p.getRadius() - p.getX()) / p.getVx() :
+                    (this.start.x + p.getRadius() - p.getX()) / p.getVx();
+            if (! Util.inRangeDouble(p.getY() + t * p.getVy(),
+                    Math.min(start.y, finish.y),
+                    Math.max(start.y, finish.y),
+                    EPS)) {
+                return null;
+            }
+        } else if(Math.abs(start.y - finish.y) < EPS) {
             type = Collision.WITH_HORIZONTAL_WALL;
             t = (p.getVy() > 0) ?
-                    (intercept.y - p.getRadius() - p.getY()) / p.getVy() :
-                    (intercept.y + p.getRadius() - p.getY()) / p.getVy();
-        }
-        else {
+                    (this.start.y - p.getRadius() - p.getY()) / p.getVy() :
+                    (this.start.y + p.getRadius() - p.getY()) / p.getVy();
+            if (! Util.inRangeDouble(p.getX() + t * p.getVx(),
+                    Math.min(start.x, finish.x),
+                    Math.max(start.x, finish.x),
+                    EPS)) {
+                return null;
+            }
+        } else {
             throw new IllegalStateException("Wall is neither horizontal nor vertical");
         }
 

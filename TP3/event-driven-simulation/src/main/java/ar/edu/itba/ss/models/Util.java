@@ -13,4 +13,8 @@ public class Util {
         return prod;
     }
 
+    public static boolean inRangeDouble(double x, double left, double right, double epsilon) {
+        return left - epsilon <= x && x <= right + epsilon;
+    }
+
 }
