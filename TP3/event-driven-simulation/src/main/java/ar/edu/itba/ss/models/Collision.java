@@ -45,10 +45,20 @@ public enum Collision {
     WITH_CORNER {
         @Override
         public void collide(Particle[] involved) {
-            if(involved.length != 1) throw new IllegalArgumentException("Only one particle may collide with a corner");
-            involved[0].setVx(-involved[0].getVx());
-            involved[0].setVy(-involved[0].getVy());
-            // TODO: Check if this makes sense as a particle with infinite mass
+            if(involved.length != 2) throw new IllegalArgumentException("Corner collision should have particle and corner");
+//            involved[0].setVx(-involved[0].getVx());
+//            involved[0].setVy(-involved[0].getVy());
+
+            final double[]
+                    r = new double[] {involved[1].getX() - involved[0].getX(), involved[1].getY() - involved[0].getY()},
+                    v = new double[] {0 - involved[0].getVx(),
+                            0 - involved[0].getVy()};
+            final double sigma = involved[0].getRadius() + 0;
+            final double J = (2 * involved[0].getMass() * Util.dotProduct(v, r)) / sigma;
+            final double Jx = (J * r[0]) / sigma, Jy = (J * r[1]) / sigma;
+
+            involved[0].setVx(involved[0].getVx() + Jx / involved[0].getMass());
+            involved[0].setVy(involved[0].getVy() + Jy / involved[0].getMass());
         }
     };
 
