@@ -24,6 +24,9 @@ public class Simulation {
         this.enclosure = enclosure;
         this.deltaT = deltaT;
 
+        cleanDynamic();
+        writeState(0);
+
         for (Particle p : particles) {
             events.add(p.nextCollision(particles, enclosure));
         }
