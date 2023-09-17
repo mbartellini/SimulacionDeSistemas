@@ -48,6 +48,7 @@ public enum Collision {
             if(involved.length != 1) throw new IllegalArgumentException("Only one particle may collide with a corner");
             involved[0].setVx(-involved[0].getVx());
             involved[0].setVy(-involved[0].getVy());
+            // TODO: Check if this makes sense as a particle with infinite mass
         }
     };
 
