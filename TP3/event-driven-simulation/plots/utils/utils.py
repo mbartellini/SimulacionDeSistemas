@@ -1,3 +1,7 @@
+import math
+import numpy as np
+
+
 def read_particle_data(filename):
     data = []
     with open(filename, 'r') as file:
@@ -29,3 +33,15 @@ def read_particle_data(filename):
         if particles:
             data.append((iteration, particles))
     return data
+
+
+def distance(p1, p2):
+    return math.sqrt((p1['x'] - p2['x']) ** 2 + (p1['y'] - p2['y']) ** 2)
+
+
+def dcm(reference, particles):
+    distances = []
+    for p, r in zip(particles, reference):
+        distances.append(distance(p, r) ** 2)
+
+    return np.mean(distances)
