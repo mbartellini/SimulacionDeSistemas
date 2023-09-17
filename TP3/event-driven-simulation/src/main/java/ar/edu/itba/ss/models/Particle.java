@@ -33,14 +33,30 @@ public class Particle {
 
         for (int i = 0; i < particles.length; i++) {
             final double angle = random.nextDouble() * 2 * Math.PI;
-            particles[i] = new Particle(i,
-                    r + random.nextDouble() * (l - 2 * r),
-                    (- 0.5 * l + r) + random.nextDouble() * (l - 2 * r),
-                    v * Math.cos(angle),
-                    v * Math.sin(angle), r, mass);
+            Particle newParticle;
+            do {
+                newParticle = new Particle(i,
+                        r + random.nextDouble() * (l - 2 * r),
+                        (- 0.5 * l + r) + random.nextDouble() * (l - 2 * r),
+                        v * Math.cos(angle),
+                        v * Math.sin(angle), r, mass);
+            } while(newParticle.overlapsWithAny(particles, i));
+            particles[i] = newParticle;
         }
 
         return particles;
+    }
+
+    public boolean overlapsWith(Particle p) {
+        return Math.pow(this.x - p.x, 2) + Math.pow(this.y - p.y, 2) <= Math.pow(this.radius + p.radius, 2);
+    }
+
+    public boolean overlapsWithAny(Particle[] particles, final int maxIndex) {
+        for (int i = 0; i < maxIndex; i++) {
+            if (this.overlapsWith(particles[i]))
+                return true;
+        }
+        return false;
     }
 
     /*
