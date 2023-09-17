@@ -57,27 +57,32 @@ public class Simulation {
             enclosure.addImpulse(current);
             writeState(i);
 
-            final Iterator<Event> it = events.iterator();
-            final List<Particle> involvedParticles =
-                    new ArrayList<>(Arrays.stream(current.getParticlesInvolved()).toList());
-            while(it.hasNext()) {
-                final Event future = it.next();
-                future.updateTime(current.getTimeToCollision());
-                if(areInvolvedInCurrent(current, future)) {
-                    it.remove();
-                    involvedParticles.addAll(Arrays.stream(future.getParticlesInvolved()).toList());
-                }
+            events.clear();
+            for (Particle p : particles) {
+                events.add(p.nextCollision(particles, enclosure));
             }
-
-            for(Particle p : involvedParticles) {
-                Event next = p.nextCollision(particles, enclosure);
-                if(next == null) {
-                    throw new IllegalStateException(String.format(
-                            "No collision to wall (%d, %d)", p.getId(), i)
-                    );
-                }
-                events.add(next);
-            }
+//
+//            final Iterator<Event> it = events.iterator();
+//            final List<Particle> involvedParticles =
+//                    new ArrayList<>(Arrays.stream(current.getParticlesInvolved()).toList());
+//            while(it.hasNext()) {
+//                final Event future = it.next();
+//                future.updateTime(current.getTimeToCollision());
+//                if(areInvolvedInCurrent(current, future)) {
+//                    it.remove();
+//                    involvedParticles.addAll(Arrays.stream(future.getParticlesInvolved()).toList());
+//                }
+//            }
+//
+//            for(Particle p : involvedParticles) {
+//                Event next = p.nextCollision(particles, enclosure);
+//                if(next == null) {
+//                    throw new IllegalStateException(String.format(
+//                            "No collision to wall (%d, %d)", p.getId(), i)
+//                    );
+//                }
+//                events.add(next);
+//            }
         }
     }
 
