@@ -39,20 +39,10 @@ public class Simulation {
         cleanDynamic();
 
         for(long i = 0; i < iterations; i++) {
-            if(i == 418) {
-                System.out.println("Breakpoint");
-            }
             final Event current = events.poll();
             if(current == null) throw new IllegalStateException("There is no event.");
             updateState(this.particles, current);
             elapsed += current.getTimeToCollision();
-            System.out.printf("%d %d\n", i, events.size());
-
-//            for(Particle p : particles) {
-//                if(!enclosure.containsParticle(p)) {
-//                    System.out.printf("i: %d, id: %d, pos: (%g, %g)\n", i, p.getId(), p.getX(), p.getY());
-//                }
-//            }
 
             enclosure.addImpulse(current);
             writeState(i);
