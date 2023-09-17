@@ -19,7 +19,7 @@ public class Main {
             Toml toml = new Toml().read(inputStream);
             N = toml.getLong("simulation.N", N);
             L = toml.getDouble("simulation.L", L);
-            deltaT = toml.getDouble("simulation.L", deltaT);
+            deltaT = toml.getDouble("simulation.deltaT", deltaT);
             iter = toml.getLong("simulation.iter", iter);
         } catch (Exception e) {
             System.out.println(e.getMessage());

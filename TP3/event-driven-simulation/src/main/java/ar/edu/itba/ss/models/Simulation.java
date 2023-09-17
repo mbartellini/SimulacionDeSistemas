@@ -11,7 +11,7 @@ public class Simulation {
     private final PriorityQueue<Event> events;
     private final Particle[] particles;
     private final Enclosure enclosure;
-    private static final String DYNAMIC = "./data/dynamic.xyz", STATIC = "./data/static.xyz";
+    private static final String DYNAMIC = "./data/dynamic.xyz", STATIC = "./data/static.xyz", PRESSURE_FILE = "./data/pressure.xyz";
     private static final int ERROR_STATUS = 1;
     private final long iterations;
     private static final double V = 1.0, MASS = 1.0, RADIUS = 0.15;
@@ -24,7 +24,9 @@ public class Simulation {
         this.enclosure = enclosure;
         this.deltaT = deltaT;
 
-        cleanDynamic();
+        cleanFile(DYNAMIC);
+        cleanFile(PRESSURE_FILE);
+        writeStatic();
         writeState(0);
 
         for (Particle p : particles) {
@@ -35,22 +37,27 @@ public class Simulation {
     }
 
     public void run() {
-        writeStatic();
-        cleanDynamic();
-
+        double impulseInterval = elapsed; // [impulseInterval, impulseInterval + deltaT)
         for(long i = 0; i < iterations; i++) {
             final Event current = events.poll();
-            if(current == null) throw new IllegalStateException("There is no event.");
-            updateState(this.particles, current);
-            elapsed += current.getTimeToCollision();
+            if(current == null)
+                throw new IllegalStateException("There is no event.");
 
-            enclosure.addImpulse(current);
+            elapsed += current.getTimeToCollision();
+            updateState(this.particles, current);
             writeState(i);
 
             events.clear();
             for (Particle p : particles) {
                 events.add(p.nextCollision(particles, enclosure));
             }
+
+            if (elapsed >= impulseInterval + deltaT) {
+                writePressure();
+                enclosure.resetImpulse();
+                impulseInterval += deltaT;
+            }
+            enclosure.addImpulse(current);
 //
 //            final Iterator<Event> it = events.iterator();
 //            final List<Particle> involvedParticles =
@@ -94,9 +101,9 @@ public class Simulation {
         details.applyCollision();
     }
 
-    private void cleanDynamic() {
+    private void cleanFile(String file) {
         try {
-            new FileWriter(Simulation.DYNAMIC, false).close();
+            new FileWriter(file, false).close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -113,12 +120,24 @@ public class Simulation {
 
     private void writeState(long iteration) {
         try (FileWriter fw = new FileWriter(DYNAMIC, true)) {
-            fw.append(String.format("%d\n\n", particles.length));
+            fw.append(String.format("%d\n", particles.length));
+            fw.append(String.format("%g\n", elapsed));
             for(Particle p : particles) {
                 fw.append(String.format("%d %g %g %g %g %g\n", p.getId(), p.getX(), p.getY(), p.getVx(), p.getVy(), p.getRadius()));
             }
         } catch (IOException e) {
             System.err.printf("Error writing to %s: %s", DYNAMIC, e.getMessage());
+            System.exit(ERROR_STATUS);
+        }
+    }
+
+    private void writePressure() {
+        try (FileWriter fw = new FileWriter(PRESSURE_FILE, true)) {
+            double leftPressure = enclosure.getSidePressure(deltaT, Enclosure.Side.LEFT);
+            double rightPressure = enclosure.getSidePressure(deltaT, Enclosure.Side.RIGHT);
+            fw.append(String.format("%g %g %g\n", elapsed, leftPressure, rightPressure));
+        } catch (IOException e) {
+            System.err.printf("Error writing to %s: %s", PRESSURE_FILE, e.getMessage());
             System.exit(ERROR_STATUS);
         }
     }

@@ -96,7 +96,7 @@ public class Enclosure {
             throw new IllegalStateException("Impulse can only be calculated in wall collisions");
         }
 
-        final double impulse = 2 * v * p.getMass();
+        final double impulse = Math.abs(2 * v * p.getMass());
 
         switch (side) {
             case LEFT -> leftImpulse += impulse;
