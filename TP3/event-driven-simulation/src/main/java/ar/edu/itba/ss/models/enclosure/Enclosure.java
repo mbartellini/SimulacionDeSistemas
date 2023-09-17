@@ -39,7 +39,7 @@ public class Enclosure {
 
         for(Wall w : walls) {
             if(w.getSide() == Side.LEFT) {
-                lp = w.getLength();
+                lp = w.getLength(); // TODO: Add?
             } else {
                 rp = w.getLength();
             }
