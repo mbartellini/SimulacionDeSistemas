@@ -63,7 +63,7 @@ public class Enclosure {
             if (timeToCorner < 0.0)
                 continue;
             if (min == null || timeToCorner < min.getTimeToCollision()) {
-                min = new Event(timeToCorner, new Particle[] {p}, Collision.WITH_CORNER);
+                min = new Event(timeToCorner, new Particle[] {p, c}, Collision.WITH_CORNER);
             }
         }
 
