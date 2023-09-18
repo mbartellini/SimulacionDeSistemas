@@ -11,7 +11,7 @@ public class Simulation {
     private final PriorityQueue<Event> events;
     private final Particle[] particles;
     private final Enclosure enclosure;
-    private static final String DYNAMIC = "./data/dynamic.xyz", STATIC = "./data/static.xyz", PRESSURE_FILE = "./data/pressure.xyz";
+    private static final String DYNAMIC = "./data/dynamic_1.xyz", STATIC = "./data/static.xyz", PRESSURE_FILE = "./data/pressure.xyz";
     private static final int ERROR_STATUS = 1;
     private final long iterations;
     private static final double V = 0.01, MASS = 1.0, RADIUS = 0.0015;
@@ -39,6 +39,8 @@ public class Simulation {
     public void run() {
         double impulseInterval = elapsed; // [impulseInterval, impulseInterval + deltaT)
         for(long i = 0; i < iterations; i++) {
+            if(i % 10000 == 0)
+                System.out.println(i);
             final Event current = events.poll();
             if(current == null)
                 throw new IllegalStateException("There is no event.");
@@ -111,7 +113,7 @@ public class Simulation {
 
     private void writeStatic() {
         try (FileWriter fw = new FileWriter(STATIC)) {
-            fw.write(String.format("%d\n%d\n", iterations, particles.length));
+            fw.write(String.format("%g %d\n", enclosure.getOpeningLength(), particles.length));
         } catch (IOException e) {
             System.err.printf("Error writing to %s: %s", STATIC, e.getMessage());
             System.exit(ERROR_STATUS);

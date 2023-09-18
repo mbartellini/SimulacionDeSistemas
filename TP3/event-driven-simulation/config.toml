@@ -1,5 +1,5 @@
 [simulation]
-N = 200
-L = 0.03
+N = 250
+L = 0.09
 iter = 100000
-deltaT = 5.0
+deltaT = 4.0
