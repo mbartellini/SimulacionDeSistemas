@@ -1,0 +1,5 @@
+[simulation]
+N = 250
+L = 0.09
+iter = 100000
+deltaT = 4.0
