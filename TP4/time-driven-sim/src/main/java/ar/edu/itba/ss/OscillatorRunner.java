@@ -1,6 +1,7 @@
 package ar.edu.itba.ss;
 
 import ar.edu.itba.ss.integrators.BeemanIntegrator;
+import ar.edu.itba.ss.integrators.GPCIntegrator;
 import ar.edu.itba.ss.integrators.Integrator;
 import ar.edu.itba.ss.integrators.VerletIntegrator;
 
@@ -9,10 +10,10 @@ import java.io.IOException;
 
 public class OscillatorRunner {
 
-    private static final double MASS = 70, K = 10000, GAMMA = 100, TF = 5, DT = 0.001, A = 1;
+    private static final double MASS = 70, K = 10000, GAMMA = 100, TF = 5, DT = 0.1, A = 1;
 
     public static void main(String[] args) {
-        Integrator integrator = new BeemanIntegrator();
+        Integrator integrator = new GPCIntegrator();
         double[] solution = integrator.solve(1, -A * GAMMA / (2 * MASS), DT, TF, MASS,
                 (r, v) -> -K * r - GAMMA * v);
 
