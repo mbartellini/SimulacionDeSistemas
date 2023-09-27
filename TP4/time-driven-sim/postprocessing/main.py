@@ -1,7 +1,12 @@
-from utils.utils import read_oscillator_data, analytic_solution
-from plotter.plotter import plot_oscillator
+from utils.utils import read_oscillator_data
+from plotter.plotter import plot_oscillator, plot_error
 
 if __name__ == '__main__':
-    data = read_oscillator_data("../dynamic.txt")
-    analytic = analytic_solution(data[0], data[1])
-    plot_oscillator(data, analytic, "solutions")
+    algs = ['verlet', 'beeman', 'gear']
+    data = {}
+    for alg in algs:
+        data[alg] = []
+        for i in range(1, 6):
+            data[alg].append(read_oscillator_data(f'../data/{alg}{i}.txt'))
+
+    plot_error(data, 'error_vs_dt')
