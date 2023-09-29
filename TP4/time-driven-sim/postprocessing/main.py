@@ -6,8 +6,8 @@ if __name__ == '__main__':
     data = {}
     for alg in algs:
         data[alg] = []
-        for i in range(1, 6):
+        for i in range(1, 7):
             data[alg].append(read_oscillator_data(f'../data/{alg}{i}.txt'))
 
-    plot_error(data, 'error_vs_dt')
-    plot_oscillator(data, 2, 'solution')
+    # plot_error(data, 'error_vs_dt')
+    plot_oscillator(data, 1, 'solution')

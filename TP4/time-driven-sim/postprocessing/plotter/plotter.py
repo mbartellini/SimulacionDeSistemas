@@ -21,8 +21,8 @@ def plot_oscillator(data: Dict, index, filename):
     ax.set_xlabel(r'Time ($s$)')
     ax.set_ylabel(r'Position ($m$)')
 
-    plt.xlim(3.1545, 3.1546)
-    plt.ylim(0.10485, 0.104854)
+    plt.xlim(0, 4)
+    plt.ylim((-1, 1))
 
     ax.plot(analytic_time, analytic, color='orange', label='Exact', alpha=0.5)
     for key in data.keys():
@@ -36,7 +36,7 @@ def plot_oscillator(data: Dict, index, filename):
 
 
 def plot_error(data: Dict, filename: str):
-    dts, tf = [0.1, 0.01, 0.001, 0.0001, 0.00001], 5
+    dts, tf = [0.01, 0.001, 0.0001, 0.00001, 0.000001], 5
     errors = {}
     for key in data.keys():
         errors[key] = []
@@ -44,7 +44,7 @@ def plot_error(data: Dict, filename: str):
     for i, dt in enumerate(dts):
         analytic = analytic_solution(dt, tf)
         for key in data.keys():
-            errors[key].append(mse(analytic, data[key][i][2]))
+            errors[key].append(mse(analytic, data[key][i + 1][2]))
 
     ax = plt.gca()
     plt.xscale('log')

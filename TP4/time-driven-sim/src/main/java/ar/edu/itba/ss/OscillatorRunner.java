@@ -16,7 +16,7 @@ public class OscillatorRunner {
     };
     private static final String[] INTEGRATOR_NAMES = {"verlet", "beeman", "gear"};
     private static final String PREFIX = "data/", SUFFIX = ".txt";
-    private static final double[] DT = {0.1, 0.01, 0.001, 0.0001, 0.00001};
+    private static final double[] DT = {0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001};
 
 
     public static void main(String[] args) {
@@ -28,9 +28,9 @@ public class OscillatorRunner {
                 );
                 try (FileWriter fw = new FileWriter(String.format("%s%s%d%s",
                         PREFIX, INTEGRATOR_NAMES[i], (int)-Math.log10(dt), SUFFIX))) {
-                    fw.write(String.format("%g %g", TF, dt));
+                    fw.write(String.format("%.15g %g", TF, dt));
                     for(double r : solution) {
-                        fw.write(String.format("\n%g", r));
+                        fw.write(String.format("\n%.10g", r));
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
