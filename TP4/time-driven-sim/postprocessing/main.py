@@ -10,3 +10,4 @@ if __name__ == '__main__':
             data[alg].append(read_oscillator_data(f'../data/{alg}{i}.txt'))
 
     plot_error(data, 'error_vs_dt')
+    plot_oscillator(data, 2, 'solution')

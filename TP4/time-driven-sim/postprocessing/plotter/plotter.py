@@ -3,22 +3,32 @@ from utils.utils import mse, analytic_solution
 from typing import Dict
 
 
-def plot_oscillator(data, filename):
+def plot_oscillator(data: Dict, index, filename):
     plt.cla()
-    dt, tf, position = data
-    time = [dt * i for i in range(len(position))]
-    analytic = analytic_solution(data[0], data[1])
+
+    linestyles = {
+        'verlet': 'dashed',
+        'beeman': 'dotted',
+        'gear': 'dashdot'
+    }
+
+    analytic_dt, tf = 0.00001, 5
+    analytic = analytic_solution(analytic_dt, tf)
+    analytic_time = [i * analytic_dt for i in range(len(analytic))]
 
     ax = plt.gca()
 
     ax.set_xlabel(r'Time ($s$)')
     ax.set_ylabel(r'Position ($m$)')
 
-    plt.xlim(0, 5)
-    plt.ylim(-1, 1)
+    plt.xlim(3.1545, 3.1546)
+    plt.ylim(0.10485, 0.104854)
 
-    ax.plot(time, position, color='blue', linestyle='dashdot', label='Approximation')
-    ax.plot(time, analytic, color='orange', label='Exact', alpha=0.5)
+    ax.plot(analytic_time, analytic, color='orange', label='Exact', alpha=0.5)
+    for key in data.keys():
+        dt, tf, position = data[key][index]
+        time = [dt * i for i in range(len(position))]
+        ax.plot(time, position, linestyle=linestyles[key], label=key)
 
     ax.legend()
 

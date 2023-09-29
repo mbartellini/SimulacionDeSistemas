@@ -12,7 +12,7 @@ public class GPCIntegrator implements Integrator {
         final double[] position = new double[size];
 
         final double[] r = new double[6], rpred = new double[6]; // Order 5
-        r[0] = r0; r[1] = v0; r[2] = force.apply(r0, v0) / mass;
+        position[0] = r[0] = r0; r[1] = v0; r[2] = force.apply(r0, v0) / mass;
 
         for(int i = 1; i < size; i++) {
             // Predict
@@ -41,7 +41,7 @@ public class GPCIntegrator implements Integrator {
         double sum = values[startFrom], factorial = 1.0;
         for(int i = startFrom + 1; i < values.length; i++) {
             factorial *= i - startFrom;
-            sum += values[i] * Math.pow(dt, i) / factorial;
+            sum += values[i] * Math.pow(dt, i - startFrom) / factorial;
         }
         return sum;
     }
