@@ -5,6 +5,7 @@ import ar.edu.itba.ss.Util;
 public class Particle {
 
     public static double SYSTEM_RADIUS = 21.49, TAU = 1., KAPPA = 2500.0;
+    public static String OVITO_FORMAT = "Properties=id:I:1:pos:R:2:velo:R:2";
 
     private final long id;
     private final double radius, mass, limit;

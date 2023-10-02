@@ -83,7 +83,7 @@ public class GPCIntegrator implements Integrator {
     private void writeState() {
         try (final FileWriter fw = new FileWriter(output, true)) {
             fw.write(String.format("%d\n", particles.length));
-            fw.write('\n');
+            fw.write(String.format("%s\n", Particle.OVITO_FORMAT));
             for (int i = 0; i < particles.length; i++) {
                 fw.write(particles[i].toFile() + "\n");
             }
