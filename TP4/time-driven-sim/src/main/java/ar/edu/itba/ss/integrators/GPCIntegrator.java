@@ -1,11 +1,35 @@
 package ar.edu.itba.ss.integrators;
 
+import ar.edu.itba.ss.Util;
+import ar.edu.itba.ss.models.Particle;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Random;
 import java.util.function.BiFunction;
 
 public class GPCIntegrator implements Integrator {
+    private static final double SYSTEM_RADIUS = 21.49, MASS = 25, RADIUS = 2.25;
+    private double dt, tf;
+    private int printEach;
+    private Particle[] particles;
+    private String output;
 
-    private final double[] ALPHA = {3.0/16.0, 251.0/360.0, 1.0, 11.0/18.0, 1.0/6.0, 1.0/60.0},
-            FACTORIAL = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0};
+    public GPCIntegrator() {
+    }
+
+    public GPCIntegrator(String output, int N, double dt, double tf, int printEach) {
+        this.output = output;
+        this.dt = dt;
+        this.printEach = printEach;
+        this.tf = tf;
+        final Random r = new Random(1234567890L);
+        particles = new Particle[N];
+        for (int i = 0; i < particles.length; i++) {
+            final double ui = r.nextDouble() * (12.0 - 9.0) + 9.0;
+            particles[i] = new Particle(i, i * 2 * Math.PI / N, ui / SYSTEM_RADIUS, RADIUS, MASS, ui);
+        }
+    }
 
     @Override
     public double[] solve(double r0, double v0, double dt, double tf, double mass, BiFunction<Double, Double, Double> force) {
@@ -19,8 +43,8 @@ public class GPCIntegrator implements Integrator {
 
         for (int i = 1; i < size; i++) {
             // Predict
-            for(int j = 0; j < rpred.length; j++) {
-                rpred[j] = taylorExpansion(r, dt, j);
+            for (int j = 0; j < rpred.length; j++) {
+                rpred[j] = Util.taylorExpansion(r, dt, j);
             }
 
             // Evaluate
@@ -28,8 +52,8 @@ public class GPCIntegrator implements Integrator {
             final double dR2 = da * dt * dt * 0.5;
 
             // Correct
-            for(int j = 0; j < r.length; j++) {
-                r[j] = rpred[j] + ALPHA[j] * dR2 * FACTORIAL[j] / Math.pow(dt, j);
+            for (int j = 0; j < r.length; j++) {
+                r[j] = Util.correct(rpred[j], dR2, dt, j);
             }
 
             position[i] = r[0];
@@ -38,12 +62,43 @@ public class GPCIntegrator implements Integrator {
         return position;
     }
 
-    private double taylorExpansion(double[] values, double dt, int startFrom) {
-        double sum = values[startFrom];
-        for (int i = startFrom + 1; i < values.length; i++) {
-            sum += values[i] * Math.pow(dt, i - startFrom) / FACTORIAL[i-startFrom];
+    public void run() {
+        cleanFile(output);
+
+        final long iterations = (long) Math.floor(tf / dt);
+        for (long i = 0; i < iterations; i++) {
+            if(i % printEach == 0)
+                writeState();
+            for (Particle p : particles) {
+                p.predict(dt);
+            }
+
+            for (int j = 0; j < particles.length; j++) {
+                int prev = (j - 1 + particles.length) % particles.length, next = (j + 1) % particles.length;
+                particles[j].correct(dt, particles[prev], particles[next]);
+            }
         }
-        return sum;
+    }
+
+    private void writeState() {
+        try (final FileWriter fw = new FileWriter(output, true)) {
+            fw.write(String.format("%d\n", particles.length));
+            fw.write('\n');
+            for (int i = 0; i < particles.length; i++) {
+                fw.write(particles[i].toFile() + "\n");
+            }
+        } catch (IOException ex) {
+            System.err.printf("Error writing to file %s: %s", output, ex.getMessage());
+            System.exit(1);
+        }
+    }
+
+    private void cleanFile(String file) {
+        try {
+            new FileWriter(file, false).close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
