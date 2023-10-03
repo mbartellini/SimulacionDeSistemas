@@ -68,6 +68,7 @@ public class GPCIntegrator implements Integrator {
         cleanFile(output);
 
         final long iterations = (long) Math.floor(tf / dt);
+        System.out.printf("Iterations: %d, print each %d\n", iterations, printEach);
         for (long i = 0; i < iterations; i++) {
             if(i % printEach == 0)
                 writeState();

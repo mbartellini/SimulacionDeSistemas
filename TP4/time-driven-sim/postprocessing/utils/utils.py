@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 import numpy as np
 import math
 
@@ -23,6 +23,34 @@ def read_oscillator_data(filename) -> (float, float, List[float]):
         for line in file:
             positions.append(float(line.strip()))
     return dt, tf, positions
+
+
+def read_particles_data(filename, dt) -> Dict:
+    ans = {
+        'dt': dt,
+        'particles': []
+    }
+    with open(filename, 'r') as file:
+        ans['N'] = int(file.readline().strip())
+        particles = []
+        for line in file:
+            stripped = line.strip()
+            if stripped.isdigit() or stripped.startswith("Properties"):
+                if particles:
+                    ans['particles'].append(particles)
+                    particles = []
+            else:
+                values = list(map(float, stripped.split()))
+                particle = {
+                    'x': values[1],
+                    'y': values[2],
+                    'vx': values[3],
+                    'vy': values[4]
+                }
+                particles.append(particle)
+        if particles:
+            ans['particles'].append(particles)
+    return ans
 
 
 def mse(expected, actual):
