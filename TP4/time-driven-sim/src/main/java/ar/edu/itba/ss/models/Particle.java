@@ -5,7 +5,8 @@ import ar.edu.itba.ss.Util;
 public class Particle {
 
     public static double SYSTEM_RADIUS = 21.49, TAU = 1., KAPPA = 2500.0;
-    public static String OVITO_FORMAT = "Properties=id:I:1:pos:R:2:velo:R:2";
+    public static String OVITO_FORMAT = "Properties=id:I:1:pos:R:2:velo:R:2",
+    OVITO_FORMAT_STATIC = "Properties=id:I:1:radius:R:1:mass:R:1";
 
     private final long id;
     private final double radius, mass, limit;
@@ -83,6 +84,10 @@ public class Particle {
         double dtheta = o.thetaPred[0] - this.thetaPred[0];
         dtheta = Math.min(Math.abs(dtheta), Math.min(Math.abs(dtheta + 2 * Math.PI), Math.abs(dtheta - 2 * Math.PI)));
         return KAPPA * (Math.abs(dtheta) - radius / SYSTEM_RADIUS);
+    }
+
+    public String toStaticFile() {
+        return String.format("%d %g %g", this.id, getRadius(), getMass());
     }
 
     public String toFile() {

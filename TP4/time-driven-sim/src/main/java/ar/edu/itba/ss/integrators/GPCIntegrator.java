@@ -13,12 +13,13 @@ public class GPCIntegrator implements Integrator {
     private double dt, tf;
     private int printEach;
     private Particle[] particles;
-    private String output;
+    private String output, staticOutput;
 
     public GPCIntegrator() {
     }
 
-    public GPCIntegrator(String output, int N, double dt, double tf, int printEach) {
+    public GPCIntegrator(String staticOutput, String output, int N, double dt, double tf, int printEach) {
+        this.staticOutput = staticOutput;
         this.output = output;
         this.dt = dt;
         this.printEach = Math.max(printEach, 1);
@@ -29,6 +30,7 @@ public class GPCIntegrator implements Integrator {
             final double ui = r.nextDouble() * (12.0 - 9.0) + 9.0;
             particles[i] = new Particle(i, i * 2 * Math.PI / N, ui / SYSTEM_RADIUS, RADIUS, MASS, ui);
         }
+        this.writeStaticState();
     }
 
     @Override
@@ -77,6 +79,20 @@ public class GPCIntegrator implements Integrator {
                 int prev = (j - 1 + particles.length) % particles.length, next = (j + 1) % particles.length;
                 particles[j].correct(dt, particles[prev], particles[next]);
             }
+        }
+    }
+
+    private void writeStaticState() {
+        cleanFile(staticOutput);
+        try (final FileWriter fw = new FileWriter(this.staticOutput, true)) {
+            fw.write(String.format("%d\n", particles.length));
+            fw.write(String.format("%s\n", Particle.OVITO_FORMAT_STATIC));
+            for (Particle p : particles) {
+                fw.write(p.toStaticFile() + "\n");
+            }
+        } catch (IOException ex) {
+            System.err.printf("Error writing to file %s: %s", staticOutput, ex.getMessage());
+            System.exit(1);
         }
     }
 
