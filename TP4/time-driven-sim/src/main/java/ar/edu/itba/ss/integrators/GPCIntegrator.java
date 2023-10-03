@@ -21,7 +21,7 @@ public class GPCIntegrator implements Integrator {
     public GPCIntegrator(String output, int N, double dt, double tf, int printEach) {
         this.output = output;
         this.dt = dt;
-        this.printEach = printEach;
+        this.printEach = Math.max(printEach, 1);
         this.tf = tf;
         final Random r = new Random(1234567890L);
         particles = new Particle[N];
@@ -84,8 +84,8 @@ public class GPCIntegrator implements Integrator {
         try (final FileWriter fw = new FileWriter(output, true)) {
             fw.write(String.format("%d\n", particles.length));
             fw.write(String.format("%s\n", Particle.OVITO_FORMAT));
-            for (int i = 0; i < particles.length; i++) {
-                fw.write(particles[i].toFile() + "\n");
+            for (Particle p : particles) {
+                fw.write(p.toFile() + "\n");
             }
         } catch (IOException ex) {
             System.err.printf("Error writing to file %s: %s", output, ex.getMessage());

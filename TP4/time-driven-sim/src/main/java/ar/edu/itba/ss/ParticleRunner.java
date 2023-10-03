@@ -2,14 +2,25 @@ package ar.edu.itba.ss;
 
 import ar.edu.itba.ss.integrators.GPCIntegrator;
 
+import java.time.LocalTime;
+
 public class ParticleRunner {
 
-    private static final String OUTPUT_FILE = "data/particles.txt";
-    private static final double DT = 0.0001, TF = 100, PRINT_DT = 0.01;
+    private static final String OUTPUT_FILE_FMT = "data/particles_%d.txt";
+    private static final double TF = 100, PRINT_DT = 0.01;
+    private static final double[] DTs = new double[] {0.1, 0.01, 0.001, 0.0001, 0.00001} ;
     private static final int N = 25;
 
     public static void main(String[] args) {
-        final GPCIntegrator runner = new GPCIntegrator(OUTPUT_FILE, N, DT, TF, (int) Math.floor(PRINT_DT / DT));
-        runner.run();
+        for(double dt : DTs) {
+            final String filename = String.format(OUTPUT_FILE_FMT, (int) -Math.log10(dt));
+
+            long start = System.currentTimeMillis();
+            final GPCIntegrator runner = new GPCIntegrator(filename, N, dt, TF, (int) Math.floor(PRINT_DT / dt));
+            runner.run();
+            long end = System.currentTimeMillis();
+
+            System.out.printf("%s done in %d ms\n", filename, end - start);
+        }
     }
 }

@@ -67,7 +67,7 @@ public class Particle {
         return SYSTEM_RADIUS * Math.sin(this.thetaPred[0]);
     }
 
-    public boolean overlapsWith(Particle p) {
+    public boolean predictedOverlap(Particle p) {
         return Math.pow(this.getPredX() - p.getPredX(), 2) + Math.pow(this.getPredY() - p.getPredY(), 2) <=
                 Math.pow(this.radius + p.radius, 2);
     }
@@ -76,11 +76,13 @@ public class Particle {
         return (limit / SYSTEM_RADIUS - thetaPred[1]) / TAU;
     }
 
+    // Returns the ABSOLUTE value of the contact force. Caller should know if it is positive or negative
     public double predictedContactForce(Particle o) {
-        if(!overlapsWith(o))
+        if (!predictedOverlap(o))
             return 0;
-        return KAPPA * (Math.abs(o.thetaPred[0] - this.thetaPred[0]) - radius / SYSTEM_RADIUS) *
-                Math.signum(o.thetaPred[0] - this.thetaPred[0]);
+        double dtheta = o.thetaPred[0] - this.thetaPred[0];
+        dtheta = Math.min(Math.abs(dtheta), Math.min(Math.abs(dtheta + 2 * Math.PI), Math.abs(dtheta - 2 * Math.PI)));
+        return KAPPA * (Math.abs(dtheta) - radius / SYSTEM_RADIUS);
     }
 
     public String toFile() {
@@ -95,7 +97,7 @@ public class Particle {
     }
 
     public void correct(double dt, Particle prev, Particle next) {
-        final double force = predictedDrivingForce() + predictedContactForce(prev) + predictedContactForce(next);
+        final double force = predictedDrivingForce() + predictedContactForce(prev) - predictedContactForce(next);
         final double da = (force / mass) - thetaPred[2];
         final double dR2 = da * dt * dt * 0.5;
         for (int i = 0; i < theta.length; i++) {
