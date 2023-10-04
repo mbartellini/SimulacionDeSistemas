@@ -45,12 +45,22 @@ def read_particles_data(filename, dt) -> Dict:
                     'x': values[1],
                     'y': values[2],
                     'vx': values[3],
-                    'vy': values[4]
+                    'vy': values[4],
+                    'angle': values[5],
+                    'omega': values[6]
                 }
                 particles.append(particle)
         if particles:
             ans['particles'].append(particles)
     return ans
+
+
+def phi_error(population_a, population_b):
+    assert len(population_a) == len(population_b)
+    phi_t = 0
+    for a, b in tuple(zip(population_a, population_b)):
+        phi_t += abs(a['angle'] - b['angle'])
+    return phi_t
 
 
 def mse(expected, actual):

@@ -5,7 +5,7 @@ import ar.edu.itba.ss.Util;
 public class Particle {
 
     public static double SYSTEM_RADIUS = 21.49, TAU = 1., KAPPA = 2500.0;
-    public static String OVITO_FORMAT = "Properties=id:I:1:pos:R:2:velo:R:2",
+    public static String OVITO_FORMAT = "Properties=id:I:1:pos:R:2:velo:R:2:angle:R:1:omega:R:1",
     OVITO_FORMAT_STATIC = "Properties=id:I:1:radius:R:1:mass:R:1";
 
     private final long id;
@@ -92,7 +92,7 @@ public class Particle {
 
     public String toFile() {
         // id x y vx vy
-        return String.format("%d %g %g %g %g", id, getX(), getY(), getVx(), getVy());
+        return String.format("%d %g %g %g %g %g %g", id, getX(), getY(), getVx(), getVy(), getAngle(), getAngularVelocity());
     }
 
     public void predict(double dt) {

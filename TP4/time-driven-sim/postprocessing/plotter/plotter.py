@@ -1,6 +1,15 @@
 import matplotlib.pyplot as plt
-from utils.utils import mse, analytic_solution
+import numpy as np
+from utils.utils import mse, analytic_solution, phi_error
 from typing import Dict
+import os
+
+_PRINT_DT = 0.1
+
+OUTPUT_DIRECTORY = "figs"
+
+if not os.path.exists(OUTPUT_DIRECTORY):
+    os.mkdir(OUTPUT_DIRECTORY)
 
 
 def plot_oscillator(data: Dict, index, filename):
@@ -58,3 +67,28 @@ def plot_error(data: Dict, filename: str):
     ax.legend()
 
     plt.savefig(f'figs/{filename}')
+
+
+def plot_phi(data):
+    # assuming all data have same sizes
+    time = [i * _PRINT_DT for i in range(len(data[0]['particles']))]
+
+    phis = []
+    for k in range(1, 5):
+        print(f"k = {k}")
+        phis.append([])
+        for instant in range(len(data[0]['particles'])):
+            my_error = phi_error(data[k - 1]['particles'][instant], data[k]['particles'][instant])
+            # my_error = np.log10(my_error)
+            phis[-1].append(my_error)
+
+    ax = plt.gca()
+    ax.set_xlabel(r'Time ($s$)')
+    ax.set_ylabel(r'$\Phi^k$ (rad)')
+
+    for i, phi in enumerate(phis):
+        ax.plot(time[:1500], phi[:1500], label=f'$k = {i+1}$', linewidth=2)
+
+    ax.legend()
+    plt.yscale('log')
+    plt.savefig(OUTPUT_DIRECTORY + '/phi_vs_time')
