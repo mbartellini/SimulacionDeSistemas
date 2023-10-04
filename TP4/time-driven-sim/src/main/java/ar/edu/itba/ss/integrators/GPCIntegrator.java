@@ -28,7 +28,7 @@ public class GPCIntegrator implements Integrator {
         particles = new Particle[N];
         for (int i = 0; i < particles.length; i++) {
             final double ui = r.nextDouble() * (12.0 - 9.0) + 9.0;
-            particles[i] = new Particle(i, i * 2 * Math.PI / N, ui / SYSTEM_RADIUS, RADIUS, MASS, ui);
+            particles[i] = new Particle(i, i * 2 * Math.PI / N, ui / SYSTEM_RADIUS, RADIUS, MASS, ui, dt);
         }
         this.writeStaticState();
     }

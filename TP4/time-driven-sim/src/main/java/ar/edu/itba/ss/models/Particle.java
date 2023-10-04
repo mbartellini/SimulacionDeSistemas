@@ -6,21 +6,22 @@ public class Particle {
 
     public static double SYSTEM_RADIUS = 21.49, TAU = 1., KAPPA = 2500.0;
     public static String OVITO_FORMAT = "Properties=id:I:1:pos:R:2:velo:R:2:angle:R:1:omega:R:1",
-    OVITO_FORMAT_STATIC = "Properties=id:I:1:radius:R:1:mass:R:1";
+            OVITO_FORMAT_STATIC = "Properties=id:I:1:radius:R:1:mass:R:1";
 
     private final long id;
     private final double radius, mass, limit;
-    // Store theta and theta predictions
-    private final double[] theta = new double[6], thetaPred = new double[6];
+    final double[] velocity, angle, acceleration; // 0 index for time i-1, 1 index for time i-2
+    double predAngle, predVel, predAcc;
 
-    public Particle(long id, double angle, double velocity, double radius, double mass, double limit) {
+    public Particle(long id, double angle, double velocity, double radius, double mass, double limit, double dt) {
         this.id = id;
         this.radius = radius;
         this.mass = mass;
         this.limit = limit;
 
-        theta[0] = angle;
-        theta[1] = velocity;
+        this.angle = new double[]{angle, angle - dt * velocity};
+        this.velocity = new double[]{velocity, velocity};
+        this.acceleration = new double[2];
     }
 
     public long getId() {
@@ -28,11 +29,11 @@ public class Particle {
     }
 
     public double getAngle() {
-        return theta[0];
+        return angle[0];
     }
 
     public double getAngularVelocity() {
-        return theta[1];
+        return velocity[0];
     }
 
 
@@ -61,11 +62,11 @@ public class Particle {
     }
 
     private double getPredX() {
-        return SYSTEM_RADIUS * Math.cos(this.thetaPred[0]);
+        return SYSTEM_RADIUS * Math.cos(this.predAngle);
     }
 
     private double getPredY() {
-        return SYSTEM_RADIUS * Math.sin(this.thetaPred[0]);
+        return SYSTEM_RADIUS * Math.sin(this.predAngle);
     }
 
     public boolean predictedOverlap(Particle p) {
@@ -74,15 +75,15 @@ public class Particle {
     }
 
     public double predictedDrivingForce() {
-        return (limit / SYSTEM_RADIUS - thetaPred[1]) / TAU;
+        return (limit / SYSTEM_RADIUS - predVel) / TAU;
     }
 
     // Returns the ABSOLUTE value of the contact force. Caller should know if it is positive or negative
     public double predictedContactForce(Particle o) {
         if (!predictedOverlap(o))
             return 0;
-        double dtheta = o.thetaPred[0] - this.thetaPred[0];
-        dtheta = Math.min(Math.abs(dtheta), Math.min(Math.abs(dtheta + 2 * Math.PI), Math.abs(dtheta - 2 * Math.PI)));
+        double dtheta = o.predAngle - this.predAngle;
+        dtheta = Math.min(Math.abs(dtheta), Math.abs(Math.abs(dtheta) - 2*Math.PI));
         return KAPPA * (Math.abs(dtheta) - radius / SYSTEM_RADIUS);
     }
 
@@ -91,23 +92,30 @@ public class Particle {
     }
 
     public String toFile() {
-        // id x y vx vy
         return String.format("%d %g %g %g %g %g %g", id, getX(), getY(), getVx(), getVy(), getAngle(), getAngularVelocity());
     }
 
     public void predict(double dt) {
-        for (int i = 0; i < thetaPred.length; i++) {
-            thetaPred[i] = Util.taylorExpansion(theta, dt, i);
-        }
+        predAngle = angle[0] + velocity[0] * dt + 2 * acceleration[0] * Math.pow(dt, 2) / 3 - acceleration[1] * Math.pow(dt, 2) / 6;
+        predVel = velocity[0] + 3 * acceleration[0] * dt / 2 - acceleration[1] * dt / 2;
     }
 
     public void correct(double dt, Particle prev, Particle next) {
         final double force = predictedDrivingForce() + predictedContactForce(prev) - predictedContactForce(next);
-        final double da = (force / mass) - thetaPred[2];
-        final double dR2 = da * dt * dt * 0.5;
-        for (int i = 0; i < theta.length; i++) {
-            theta[i] = Util.correct(thetaPred[i], dR2, dt, i);
-        }
+        predAcc = force / mass;
+
+        double correctedVel = velocity[0] + predAcc * dt / 3 + 5 * acceleration[0] * dt / 6 - acceleration[1] * dt / 6;
+
+        // BOOOOOCA
+        angle[1] = angle[0];
+        velocity[1] = velocity[0];
+        acceleration[1] = acceleration[0];
+
+        angle[0] = predAngle;
+        velocity[0] = correctedVel;
+        acceleration[0] = predAcc;
     }
+
+
 
 }
