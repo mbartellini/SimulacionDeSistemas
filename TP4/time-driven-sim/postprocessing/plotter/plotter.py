@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
-import numpy as np
-from utils.utils import mse, analytic_solution, phi_error
+from utils.utils import mse, analytic_solution, phi_error, mean_vel, individual_density
 from typing import Dict
 import os
 
-_PRINT_DT = 0.1
+_PRINT_DT = 0.01
 
 OUTPUT_DIRECTORY = "figs"
 
@@ -79,7 +78,6 @@ def plot_phi(data):
         phis.append([])
         for instant in range(len(data[0]['particles'])):
             my_error = phi_error(data[k - 1]['particles'][instant], data[k]['particles'][instant])
-            # my_error = np.log10(my_error)
             phis[-1].append(my_error)
 
     ax = plt.gca()
@@ -87,8 +85,47 @@ def plot_phi(data):
     ax.set_ylabel(r'$\Phi^k$ (rad)')
 
     for i, phi in enumerate(phis):
-        ax.plot(time[:1500], phi[:1500], label=f'$k = {i+1}$', linewidth=2)
+        if i == 0:
+            continue
+        ax.plot(time, phi, label=f'$k = {i+1}$', linewidth=2)
 
     ax.legend()
-    plt.yscale('log')
     plt.savefig(OUTPUT_DIRECTORY + '/phi_vs_time')
+
+
+def plot_mean_vel(data):
+    time = [_PRINT_DT * i for i in range(len(data[0]["particles"]))]
+
+    plt.cla()
+    ax = plt.gca()
+    ax.set_xlabel(r'Time ($s$)')
+    ax.set_ylabel(r'$\overline{\omega}$ ($\frac{rad}{s}$)')
+
+    for sim in data:
+        n = sim['N']
+        mean, std = mean_vel(sim['particles']) # data[x]['particles']
+        plt.errorbar(time, mean, label=f'N = {n}')
+
+    ax.legend()
+    plt.xlim(0, 180)
+    plt.savefig(OUTPUT_DIRECTORY + '/mean_vel_vs_time')
+
+
+def plot_individual_density(data):
+    plt.cla()
+    ax = plt.gca()
+    ax.set_xlabel(r'$\omega$ ($rad$)')
+    ax.set_ylabel(r'$\rho$ ($\frac{1}{cm}$)')
+
+    for sim in data:
+        vel, rho = [], []
+        for instant in sim['particles']:
+            length = len(instant)
+            for i, p in enumerate(instant):
+                prev_idx, next_idx = (i - 1 + length) % length, (i + 1) % length
+                vel.append(p['omega'])
+                rho.append(individual_density(p, instant[prev_idx], instant[next_idx]))
+        plt.scatter(vel, rho, label=f'N = {sim["N"]}')
+
+    ax.legend()
+    plt.savefig(OUTPUT_DIRECTORY + '/individual_density')

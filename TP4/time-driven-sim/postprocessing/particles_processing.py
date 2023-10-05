@@ -11,5 +11,4 @@ if __name__ == "__main__":
     for i in range(0, 5):
         print(len(data[i]['particles']))
 
-    print(phi_error(data[3]['particles'][-1], data[4]['particles'][-1]))
     plot_phi(data)
