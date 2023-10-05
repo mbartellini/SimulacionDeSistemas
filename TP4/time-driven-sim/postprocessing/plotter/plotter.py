@@ -29,7 +29,7 @@ def plot_oscillator(data: Dict, index, filename):
     ax.set_xlabel(r'Time ($s$)')
     ax.set_ylabel(r'Position ($m$)')
 
-    plt.xlim(0, 4)
+    plt.xlim(0, 5)
     plt.ylim((-1, 1))
 
     ax.plot(analytic_time, analytic, color='orange', label='Exact', alpha=0.5)
@@ -57,6 +57,7 @@ def plot_error(data: Dict, filename: str):
     ax = plt.gca()
     plt.xscale('log')
     plt.yscale('log')
+    plt.grid()
     ax.set_xlabel(r'$\Delta t$ ($s$)')
     ax.set_ylabel(r'MSE')
 
@@ -87,7 +88,7 @@ def plot_phi(data):
     for i, phi in enumerate(phis):
         if i == 0:
             continue
-        ax.plot(time, phi, label=f'$k = {i+1}$', linewidth=2)
+        ax.plot(time, phi, label=f'$k = {i + 1}$', linewidth=2)
 
     ax.legend()
     plt.savefig(OUTPUT_DIRECTORY + '/phi_vs_time')
@@ -103,8 +104,8 @@ def plot_mean_vel(data):
 
     for sim in data:
         n = sim['N']
-        mean, std = mean_vel(sim['particles']) # data[x]['particles']
-        plt.errorbar(time, mean, label=f'N = {n}')
+        mean, std = mean_vel(sim['particles'])  # data[x]['particles']
+        plt.errorbar(time, std, label=f'N = {n}')
 
     ax.legend()
     plt.savefig(OUTPUT_DIRECTORY + '/mean_vel_vs_time')
@@ -128,3 +129,23 @@ def plot_individual_density(data):
 
     ax.legend()
     plt.savefig(OUTPUT_DIRECTORY + '/individual_density')
+
+
+def plot_individual_velocity(simulation, filename):
+    size = len(simulation['particles'])
+    time = [_PRINT_DT * i for i in range(size)]
+
+    print(simulation.keys())
+    print(size)
+
+    plt.cla()
+    ax = plt.gca()
+    ax.set_xlabel(r'Time ($s$)')
+    ax.set_ylabel(r'$\omega$ ($rad$)')
+
+    for p_id in range(simulation['N']):
+        vel = [simulation['particles'][i][p_id]['omega'] for i in range(size)]
+        plt.plot(time, vel, linewidth=2, label=f'id = {p_id}')
+
+    ax.legend()
+    plt.savefig(OUTPUT_DIRECTORY + '/' + filename)

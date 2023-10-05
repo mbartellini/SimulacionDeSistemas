@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 
 public class GPCIntegrator implements Integrator {
-    private static final double SYSTEM_RADIUS = 21.49, MASS = 25, RADIUS = 2.25, MIN_UI = 9.0, MAX_UI = 12.0;
+    private static final double SYSTEM_RADIUS = 21.49, MASS = 25.0, RADIUS = 2.25, MIN_UI = 9.0, MAX_UI = 12.0;
     private double dt, tf;
     private int printEach;
     private Particle[] particles;
