@@ -99,7 +99,7 @@ def plot_mean_vel(data):
     plt.cla()
     ax = plt.gca()
     ax.set_xlabel(r'Time ($s$)')
-    ax.set_ylabel(r'$\overline{\omega}$ ($\frac{rad}{s}$)')
+    ax.set_ylabel(r'$\overline{\omega}$ ($rad/s$)')
 
     for sim in data:
         n = sim['N']
@@ -107,7 +107,6 @@ def plot_mean_vel(data):
         plt.errorbar(time, mean, label=f'N = {n}')
 
     ax.legend()
-    plt.xlim(0, 180)
     plt.savefig(OUTPUT_DIRECTORY + '/mean_vel_vs_time')
 
 
