@@ -1,3 +1,5 @@
+import math
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -175,4 +177,66 @@ def plot_stationary_vel(data, filename):
     ax.set_ylabel(r'$\overline{\omega}$ ($rad/s$)')
 
     plt.errorbar(x_val, y_val, fmt='o-')
+    plt.savefig(OUTPUT_DIRECTORY + '/' + filename, bbox_inches='tight')
+
+
+def _get_idx(bins, val):
+    for i in range(len(bins)):
+        if val < bins[i]:
+            return i - 1
+    return -1
+
+
+def _mid_values(bins):
+    ans = []
+    for i in range(len(bins) - 1):
+        ans.append(np.mean([bins[i], bins[i + 1]]))
+    return ans
+
+
+def plot_pdf(data, filename):
+    start_idx = int(_STARTING_TIME / _PRINT_DT)
+
+    min_vel, max_vel, size = None, None, 0
+    for sim in data:
+        for instant in sim['particles'][:start_idx]:
+            for p in instant:
+                size += 1
+                if max_vel is None or p['omega'] > max_vel:
+                    max_vel = p['omega']
+                if min_vel is None or p['omega'] < min_vel:
+                    min_vel = p['omega']
+
+    bin_count = 1 + round(math.log2(size))
+    bin_size = (max_vel - min_vel) / bin_count
+    bins = np.arange(min_vel, max_vel, bin_size)
+    bin_mid = _mid_values(bins)
+
+    print(min_vel, max_vel)
+
+    plt.cla()
+    ax = plt.gca()
+    ax.set_xlabel(r'$\omega$ ($rad$)')
+    ax.set_ylabel(r'Densidad de probabilidad')
+
+    for sim in data:
+        count = [0 for _ in range(bin_count - 1)]
+        for instant in sim['particles'][:start_idx]:
+            for p in instant:
+                idx = _get_idx(bins, p['omega'])
+
+                if idx < 0 or idx >= bin_count - 1:
+                    print(idx, p['omega'])
+
+                count[idx] += 1
+        for i in range(len(count)):
+            count[i] = count[i] / (bin_size * size)
+        plt.plot(bin_mid, count, marker='o', label=f'N = {sim["N"]}')
+
+    min_omega_i, max_omega_i= 9.0 / 21.94, 12.0 / 21.94
+    initial_x = np.arange(min_omega_i, max_omega_i, 0.1)
+    initial_y = [1/(max_omega_i - min_omega_i) for _ in initial_x]
+    plt.plot(initial_x, initial_y, linestyle="dashed", label=f'Inicial')
+
+    ax.legend()
     plt.savefig(OUTPUT_DIRECTORY + '/' + filename, bbox_inches='tight')
