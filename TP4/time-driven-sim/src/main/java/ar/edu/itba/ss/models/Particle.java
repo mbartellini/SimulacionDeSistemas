@@ -116,7 +116,7 @@ public class Particle {
     }
 
     public void correct(double dt, Particle prev, Particle next) {
-        final double force = predictedDrivingForce() - predictedContactForce(prev) + predictedContactForce(next);
+        final double force = predictedDrivingForce() + predictedContactForce(prev) - predictedContactForce(next);
         final double da = (force / mass) - thetaPred[2];
         final double dR2 = da * dt * dt * 0.5;
         for (int i = 0; i < theta.length; i++) {
