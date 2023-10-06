@@ -18,7 +18,7 @@ public class ParticleRunner {
             final String staticFilename = String.format(OUTPUT_FILE_FMT, (int) -Math.log10(dt), "static");
 
             long start = System.currentTimeMillis();
-            final GPCIntegrator runner = new GPCIntegrator(staticFilename, dynamicFilename, N, dt, TF, (int) Math.round(PRINT_DT / dt));
+            final GPCIntegrator runner = new GPCIntegrator(staticFilename, dynamicFilename, N, dt, TF, (int) Math.round(PRINT_DT / dt), false);
             runner.run();
             long end = System.currentTimeMillis();
 

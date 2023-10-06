@@ -5,6 +5,8 @@ import ar.edu.itba.ss.models.Particle;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.function.BiFunction;
 
@@ -18,18 +20,26 @@ public class GPCIntegrator implements Integrator {
     public GPCIntegrator() {
     }
 
-    public GPCIntegrator(String staticOutput, String output, int N, double dt, double tf, int printEach) {
+    public GPCIntegrator(String staticOutput, String output, int N, double dt, double tf, int printEach, boolean order) {
         this.staticOutput = staticOutput;
         this.output = output;
         this.dt = dt;
         this.printEach = Math.max(printEach, 1);
         this.tf = tf;
-        final Random r = new Random(0L);
+        final Random r = new Random(1234567890L);
         particles = new Particle[N];
         for (int i = 0; i < particles.length; i++) {
             final double ui = r.nextDouble() * (MAX_UI - MIN_UI) + MIN_UI;
             particles[i] = new Particle(i, i * 2 * Math.PI / N, ui / SYSTEM_RADIUS, RADIUS, MASS, ui);
         }
+
+        if(order) {
+            Arrays.sort(particles, Comparator.comparingDouble(Particle::getLimit));
+            for (int i = 0; i < particles.length; i++) {
+                particles[i].setAngle(i * 2 * Math.PI / N);
+            }
+        }
+
         this.writeStaticState();
     }
 

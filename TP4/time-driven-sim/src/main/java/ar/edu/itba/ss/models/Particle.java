@@ -35,6 +35,13 @@ public class Particle {
         return theta[1];
     }
 
+    public void setAngle(double angle) {
+        theta[0] = angle;
+    }
+
+    public double getLimit() {
+        return limit;
+    }
 
     public double getRadius() {
         return radius;
@@ -83,7 +90,7 @@ public class Particle {
             return 0;
         double dtheta = o.thetaPred[0] - this.thetaPred[0];
         dtheta = Math.min(Math.abs(dtheta), Math.min(Math.abs(dtheta + 2 * Math.PI), Math.abs(dtheta - 2 * Math.PI)));
-        return KAPPA * (Math.abs(dtheta) - radius / SYSTEM_RADIUS);
+        return KAPPA * (Math.abs(dtheta) - 2 * radius / SYSTEM_RADIUS);
     }
 
     public String toStaticFile() {
@@ -107,6 +114,10 @@ public class Particle {
         final double dR2 = da * dt * dt * 0.5;
         for (int i = 0; i < theta.length; i++) {
             theta[i] = Util.correct(thetaPred[i], dR2, dt, i);
+        }
+
+        if(theta[0] > 2 * Math.PI) {
+            theta[0] -= 2 * Math.PI;
         }
     }
 

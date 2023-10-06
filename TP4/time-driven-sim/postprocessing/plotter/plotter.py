@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import numpy as np
+
 from utils.utils import mse, analytic_solution, phi_error, mean_vel, individual_density
 from typing import Dict
 import os
@@ -105,16 +107,17 @@ def plot_mean_vel(data):
     for sim in data:
         n = sim['N']
         mean, std = mean_vel(sim['particles'])  # data[x]['particles']
-        plt.errorbar(time, std, label=f'N = {n}')
+        plt.plot(time, mean, label=f'N = {n}')
 
     ax.legend()
-    plt.savefig(OUTPUT_DIRECTORY + '/mean_vel_vs_time')
+    plt.xlim(0, 180)
+    plt.savefig(OUTPUT_DIRECTORY + '/mean_vel_vs_time', bbox_inches="tight")
 
 
 def plot_individual_density(data):
     plt.cla()
     ax = plt.gca()
-    ax.set_xlabel(r'$\omega$ ($rad$)')
+    ax.set_xlabel(r'$\omega$ ($rad/s$)')
     ax.set_ylabel(r'$\rho$ ($\frac{1}{cm}$)')
 
     for sim in data:
@@ -128,7 +131,7 @@ def plot_individual_density(data):
         plt.scatter(vel, rho, label=f'N = {sim["N"]}')
 
     ax.legend()
-    plt.savefig(OUTPUT_DIRECTORY + '/individual_density')
+    plt.savefig(OUTPUT_DIRECTORY + '/individual_density', bbox_inches="tight")
 
 
 def plot_individual_velocity(simulation, filename):
@@ -141,11 +144,35 @@ def plot_individual_velocity(simulation, filename):
     plt.cla()
     ax = plt.gca()
     ax.set_xlabel(r'Time ($s$)')
-    ax.set_ylabel(r'$\omega$ ($rad$)')
+    ax.set_ylabel(r'$\omega$ ($rad/s$)')
 
     for p_id in range(simulation['N']):
         vel = [simulation['particles'][i][p_id]['omega'] for i in range(size)]
         plt.plot(time, vel, linewidth=2, label=f'id = {p_id}')
 
     ax.legend()
-    plt.savefig(OUTPUT_DIRECTORY + '/' + filename)
+    plt.savefig(OUTPUT_DIRECTORY + '/' + filename, bbox_inches="tight")
+
+
+_STARTING_TIME = 50
+
+
+def plot_stationary_vel(data, filename):
+    x_val = range(5, 31, 5)
+    y_val = []
+    y_error = []
+    print(x_val)
+    start_idx = int(50 / _PRINT_DT)
+    print(start_idx)
+    for sim in data:
+        mean, std = mean_vel(sim['particles'][:start_idx])
+        y_val.append(np.mean(mean))
+        y_error.append(np.std(mean))
+
+    plt.cla()
+    ax = plt.gca()
+    ax.set_xlabel(r'N')
+    ax.set_ylabel(r'$\overline{\omega}$ ($rad/s$)')
+
+    plt.errorbar(x_val, y_val, fmt='o-')
+    plt.savefig(OUTPUT_DIRECTORY + '/' + filename, bbox_inches='tight')

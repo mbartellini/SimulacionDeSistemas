@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from utils.utils import read_particles_data
-from plotter.plotter import plot_mean_vel, plot_individual_density, plot_individual_velocity
+from plotter.plotter import plot_mean_vel, plot_individual_density, plot_individual_velocity, plot_stationary_vel
 
 DT = 0.001
 if __name__ == "__main__":
@@ -15,3 +15,4 @@ if __name__ == "__main__":
 
     plot_mean_vel(data)
     plot_individual_velocity(data[0], 'individual_vel_5')
+    plot_stationary_vel(data, 'stationary')
