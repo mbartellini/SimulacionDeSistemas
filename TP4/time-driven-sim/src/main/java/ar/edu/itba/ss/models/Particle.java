@@ -97,7 +97,7 @@ public class Particle {
         assert alternative >= 0 && alternative <= 2 * Math.PI;
         dtheta = Math.min(Math.abs(dtheta), Math.min(Math.abs(dtheta + 2 * Math.PI), Math.abs(dtheta - 2 * Math.PI)));
         assert (Math.abs(alternative) - 2 * radius / SYSTEM_RADIUS) >= 0;
-        return KAPPA * (Math.abs(alternative) - 2 * radius / SYSTEM_RADIUS);
+        return KAPPA * (Math.abs(alternative) - radius / SYSTEM_RADIUS);
     }
 
     public String toStaticFile() {
