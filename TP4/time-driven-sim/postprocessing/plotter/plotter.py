@@ -7,7 +7,7 @@ from utils.utils import mse, analytic_solution, phi_error, mean_vel, individual_
 from typing import Dict
 import os
 
-_PRINT_DT = 0.01
+_PRINT_DT = 0.1
 
 OUTPUT_DIRECTORY = "figs"
 
@@ -130,7 +130,7 @@ def plot_individual_density(data):
                 prev_idx, next_idx = (i - 1 + length) % length, (i + 1) % length
                 vel.append(p['omega'])
                 rho.append(individual_density(p, instant[prev_idx], instant[next_idx]))
-        plt.scatter(vel, rho, label=f'N = {sim["N"]}')
+        plt.scatter(vel, rho, label=f'N = {sim["N"]}', marker='.')
 
     ax.legend()
     plt.savefig(OUTPUT_DIRECTORY + '/individual_density', bbox_inches="tight")
@@ -216,10 +216,13 @@ def plot_pdf(data, filename):
 
     plt.cla()
     ax = plt.gca()
-    ax.set_xlabel(r'$\omega$ ($rad$)')
+    ax.set_xlabel(r'$\omega$ ($rad/s$)')
     ax.set_ylabel(r'Densidad de probabilidad')
 
     for sim in data:
+        n = sim['N']
+        if not (n == 10 or n == 20 or n == 30):
+            continue
         count = [0 for _ in range(bin_count - 1)]
         for instant in sim['particles'][:start_idx]:
             for p in instant:
