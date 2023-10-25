@@ -1,0 +1,10 @@
+[simulation]
+N = 40
+L = 3.1
+noise = 0.0
+v = 0.03
+r = 1.0
+iter = 250
+frame_duration = 100
+width = 0.01
+length = 2

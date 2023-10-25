@@ -13,11 +13,14 @@ public class Runner {
         Simulation s = new Simulation() {
             @Override
             public void run(State initialState, Rule rule, double dt, long iterations, long printInterval) {
+                System.out.println("repiola");
                 Simulation.super.run(initialState, rule, dt, iterations, printInterval);
             }
         };
 
-        // s.run();
+        //s.run();
+
+
 
     }
 }
