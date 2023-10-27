@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation, PillowWriter
 from tqdm import tqdm
+from matplotlib.animation import FFMpegWriter
 
 # Leer el archivo de datos
 data_path = "../tp5-data/Trayectorias_Unificadas.txt"  # Asegúrate de que este sea el camino correcto al archivo
@@ -43,4 +44,10 @@ ani = FuncAnimation(fig, lambda i: plot_frame(data['seg'].unique()[i], data), fr
                     init_func=init, repeat=True)
 
 # Guardar la animación como un archivo .gif
-ani.save("animation.gif", writer=PillowWriter(fps=5))
+ani.save("animation.gif", writer=PillowWriter(fps=int(30/4)))
+
+# Configurar el escritor de video FFmpeg
+writer = FFMpegWriter(fps=int(30/4), metadata=dict(artist='Me'), bitrate=1800)
+
+# Guardar la animación en un archivo .mp4
+ani.save("animation.mp4", writer=writer)
