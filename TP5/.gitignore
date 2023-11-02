@@ -1,2 +1,3 @@
 tp5-data/*
 !tp5-data/.gitkeep
+tp5-data/velocities
