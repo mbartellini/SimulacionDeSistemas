@@ -1,3 +1,4 @@
 tp5-data/*
+tp5-data/velocities/*
 !tp5-data/.gitkeep
-tp5-data/velocities
+!tp5-data/Trayectorias_Unificadas.txt
