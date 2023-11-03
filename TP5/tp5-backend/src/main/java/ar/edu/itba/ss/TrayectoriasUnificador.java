@@ -50,7 +50,7 @@ public class TrayectoriasUnificador {
                 double x = Double.parseDouble(partes[2]);
                 double idDouble = Double.parseDouble(partes[3]) + offsetId;  // Parsea el id como un double
                 int id = (int) idDouble;  // Convierte el double a un int
-                double seg = frame * 4.0 / 30.0;
+                double seg = (frame - 1) * 4.0 / 30.0;
                 lineasProcesadas.add(String.format(Locale.US, "%g\t%s\t%s\t%d", seg, partes[1], partes[2], id));  // TODO: Preguntar presizao
             } catch (NumberFormatException nfe) {
                 System.err.println("Error al procesar la línea: " + linea);
